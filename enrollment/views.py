@@ -18,7 +18,8 @@ class EnrollmentDetail(APIView):
         if not enrollment:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        return Response(EnrollmentSerializer(enrollment).data, status=status.HTTP_200_OK)
+        return Response(
+            EnrollmentSerializer(enrollment).data, status=status.HTTP_200_OK)
 
 
 class EnrollmentCompletion(APIView):
@@ -35,16 +36,18 @@ class EnrollmentCompletion(APIView):
                 'failed to complete enrollment `{0}`: {1}'.format(pk, err))
             return Response(err.message, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(EnrollmentSerializer(enrollment).data, status=status.HTTP_200_OK)
+        return Response(
+            EnrollmentSerializer(enrollment).data, status=status.HTTP_200_OK)
 
 
 class EnrollmentDeviceSelection(APIView):
     def post(self, request, pk, format=None):
         serializer = DeviceSelectionSerializer(data=request.data)
         if not serializer.is_valid():
-            logger.error(
-                'failed to parse device selection request: {0}'.format(serializer.errors))
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            logger.error('failed to parse device selection request: {0}'.
+                         format(serializer.errors))
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         enrollment = Enrollment.get_by_integration_and_pk(pk, request.auth)
         if not enrollment:
@@ -54,28 +57,33 @@ class EnrollmentDeviceSelection(APIView):
 
         _, err = enrollment.select_device(data)
         if err:
-            logger.error('failed to select device `{0}` for enrollment `{1}`: {2}'.format(
-                data['kind'], pk, err))
+            logger.error(
+                'failed to select device `{0}` for enrollment `{1}`: {2}'.
+                format(data['kind'], pk, err))
             return Response(err.message, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(EnrollmentSerializer(enrollment).data, status=status.HTTP_200_OK)
+        return Response(
+            EnrollmentSerializer(enrollment).data, status=status.HTTP_200_OK)
 
 
 class EnrollmentList(APIView):
     def post(self, request, format=None):
         serializer = CreateEnrollmentSerializer(data=request.data)
         if not serializer.is_valid():
-            logger.info('failed to validate create enrollment request: {0}'.format(
-                serializer.errors))
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            logger.info('failed to validate create enrollment request: {0}'.
+                        format(serializer.errors))
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         data = serializer.validated_data
         integration = request.auth
 
         enrollment, err = integration.enroll(data['username'])
         if err:
-            logger.error('failed to create enrollment for user `{0}`: {1}'.format(
-                data['username'], err))
+            logger.error('failed to create enrollment for user `{0}`: {1}'.
+                         format(data['username'], err))
             return Response(err.message, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(EnrollmentSerializer(enrollment).data, status=status.HTTP_201_CREATED)
+        return Response(
+            EnrollmentSerializer(enrollment).data,
+            status=status.HTTP_201_CREATED)

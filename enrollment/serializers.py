@@ -10,7 +10,8 @@ from .models import Enrollment
 class EnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment
-        fields = ('pk', 'device_selection', 'username', 'status', 'created_at', 'expires_at', 'public_details')
+        fields = ('pk', 'device_selection', 'username', 'status', 'created_at',
+                  'expires_at', 'public_details')
 
 
 class CreateEnrollmentSerializer(serializers.Serializer):

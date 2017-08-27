@@ -19,8 +19,7 @@ class ClientDeviceInline(admin.StackedInline):
 
 
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ['username', 'created_at',
-                    'integration', 'group', 'email']
+    list_display = ['username', 'created_at', 'integration', 'group', 'email']
     search_fields = ['name', 'username', 'group', 'email']
     list_filter = ['group', 'integration', 'created_at']
     inlines = [ClientDeviceInline]

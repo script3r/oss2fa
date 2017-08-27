@@ -9,26 +9,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
             name='Enrollment',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID')),
                 ('name', models.CharField(max_length=128)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('last_updated_at', models.DateTimeField(auto_now=True)),
                 ('active', models.BooleanField(default=True)),
                 ('username', models.CharField(max_length=64)),
                 ('expires_at', models.DateTimeField()),
-                ('private_details', django.contrib.postgres.fields.jsonb.JSONField(blank=True, null=True)),
-                ('public_details', django.contrib.postgres.fields.jsonb.JSONField(blank=True, null=True)),
+                ('private_details',
+                 django.contrib.postgres.fields.jsonb.JSONField(
+                     blank=True, null=True)),
+                ('public_details',
+                 django.contrib.postgres.fields.jsonb.JSONField(
+                     blank=True, null=True)),
                 ('portal_url', models.URLField(blank=True, null=True)),
                 ('status', models.PositiveSmallIntegerField(
-                    choices=[(1, 'New'), (2, 'In Progress'), (3, 'Complete'), (4, 'Failed'), (5, 'Expired')],
+                    choices=[(1, 'New'), (2, 'In Progress'), (3, 'Complete'),
+                             (4, 'Failed'), (5, 'Expired')],
                     default=1)),
-            ],
-        ),
+            ], ),
     ]

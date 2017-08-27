@@ -8,7 +8,9 @@ from .models import Device, DeviceKind
 class DeviceKindSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeviceKind
-        fields = ('name', 'description',)
+        fields = (
+            'name',
+            'description', )
 
 
 class DeviceSerializer(serializers.ModelSerializer):
@@ -16,4 +18,7 @@ class DeviceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Device
-        fields = ('pk', 'kind', 'name',)
+        fields = (
+            'pk',
+            'kind',
+            'name', )

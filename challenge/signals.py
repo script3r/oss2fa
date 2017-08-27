@@ -9,10 +9,12 @@ logger = logging.getLogger(__name__)
 
 
 @receiver(post_save, sender=Challenge)
-def on_challenge_created_perform_challenge(sender, instance, created, **kwargs):
+def on_challenge_created_perform_challenge(sender, instance, created,
+                                           **kwargs):
     if created:
         logger.info(
-            u'processing challenge creation for `{0}` with device kind `{1}`'.format(instance.pk, instance.device.kind))
+            u'processing challenge creation for `{0}` with device kind `{1}`'.
+            format(instance.pk, instance.device.kind))
 
         # obtain the device handler module
         module = instance.device.kind.get_module()
@@ -23,7 +25,8 @@ def on_challenge_created_perform_challenge(sender, instance, created, **kwargs):
             instance.status = Challenge.STATUS_FAILED
             instance.save()
 
-            logger.error(u'failed to process challenge `{0}` due to: {1}'.format(instance.pk, err))
+            logger.error(u'failed to process challenge `{0}` due to: {1}'.
+                         format(instance.pk, err))
             return
 
         # mark the challenge as in-progress

@@ -14,7 +14,6 @@ class DeviceKind(models.Model):
     configuration = JSONField(blank=True, null=True)
     description = models.TextField()
 
-
     def get_module(self):
         parts = self.module.rsplit('.', 1)
         klass = getattr(importlib.import_module(parts[0]), parts[1])
@@ -31,7 +30,9 @@ class Device(Entity):
         return self.kind.get_module().get_device_details_model(self.details)
 
     class Meta:
-        unique_together = ('name', 'client',)
+        unique_together = (
+            'name',
+            'client', )
 
 
 class DeviceSelection(models.Model):

@@ -11,7 +11,8 @@ class DeviceKindModule(object):
     def __init__(self, configuration):
         self._configuration, err = self.get_configuration_model(configuration)
         if err:
-            raise Exception('could not instantiate configuration: {0}'.format(err))
+            raise Exception(
+                'could not instantiate configuration: {0}'.format(err))
 
     @staticmethod
     def build_model_instance(klass, data):

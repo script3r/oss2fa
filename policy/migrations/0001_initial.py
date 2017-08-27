@@ -10,24 +10,31 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
             name='Configuration',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID')),
                 ('kind', models.PositiveSmallIntegerField(
-                    choices=[(1, 'Challenge Token Length'), (2, 'Challenge Expiration (Minutes)'),
+                    choices=[(1, 'Challenge Token Length'),
+                             (2, 'Challenge Expiration (Minutes)'),
                              (3, 'Enrollment Expiration (Minutes)')])),
                 ('value', models.CharField(max_length=64)),
-            ],
-        ),
+            ], ),
         migrations.CreateModel(
             name='Policy',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID')),
                 ('name', models.CharField(max_length=128)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('last_updated_at', models.DateTimeField(auto_now=True)),
@@ -35,31 +42,36 @@ class Migration(migrations.Migration):
             ],
             options={
                 'abstract': False,
-            },
-        ),
+            }, ),
         migrations.CreateModel(
             name='Rule',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID')),
                 ('kind', models.PositiveSmallIntegerField(
-                    choices=[(1, 'Device Selection Restriction'), (2, 'E-mail Domain Restriction')])),
-                ('definition', django.contrib.postgres.fields.jsonb.JSONField()),
-                ('policy', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='rules',
-                                             to='policy.Policy')),
-            ],
-        ),
+                    choices=[(1, 'Device Selection Restriction'),
+                             (2, 'E-mail Domain Restriction')])),
+                ('definition',
+                 django.contrib.postgres.fields.jsonb.JSONField()),
+                ('policy', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='rules',
+                    to='policy.Policy')),
+            ], ),
         migrations.AddField(
             model_name='configuration',
             name='policy',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='configurations',
-                                    to='policy.Policy'),
-        ),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='configurations',
+                to='policy.Policy'), ),
         migrations.AlterUniqueTogether(
             name='rule',
-            unique_together=set([('policy', 'kind')]),
-        ),
+            unique_together=set([('policy', 'kind')]), ),
         migrations.AlterUniqueTogether(
             name='configuration',
-            unique_together=set([('policy', 'kind')]),
-        ),
+            unique_together=set([('policy', 'kind')]), ),
     ]

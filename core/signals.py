@@ -7,6 +7,9 @@ from rest_framework.authtoken.models import Token
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def on_user_created_create_auth_token(sender, instance=None, created=False, **kwargs):
+def on_user_created_create_auth_token(sender,
+                                      instance=None,
+                                      created=False,
+                                      **kwargs):
     if created:
         Token.objects.create(user=instance)

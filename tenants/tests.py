@@ -10,15 +10,13 @@ class IntegrationTestCase(TestCase):
             first_name='John',
             last_name='Doe',
             email='john.doe@email.com',
-            password='john.doe'
-        )
+            password='john.doe')
 
     def test_can_create_integration(self):
         integration = Integration.create(
             tenant=Tenant.objects.filter(name='Test Tenant').first(),
             name='Test Integration',
-            notes='Test Notes'
-        )
+            notes='Test Notes')
 
         self.assertIsNotNone(integration.access_key)
         self.assertIsNotNone(integration.secret_key)

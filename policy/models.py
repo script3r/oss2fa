@@ -30,9 +30,10 @@ class Configuration(models.Model):
 
     KIND_CHOICES = (
         (KIND_TOKEN_LENGTH, _('Token Digits Length')),
-        (KIND_CHALLENGE_EXPIRATION_IN_MINUTES, _('Challenge Expiration (Minutes)')),
-        (KIND_ENROLLMENT_EXPIRATION_IN_MINUTES, _('Enrollment Expiration (Minutes)')),
-    )
+        (KIND_CHALLENGE_EXPIRATION_IN_MINUTES,
+         _('Challenge Expiration (Minutes)')),
+        (KIND_ENROLLMENT_EXPIRATION_IN_MINUTES,
+         _('Enrollment Expiration (Minutes)')), )
 
     KIND_PROCESSORS = {
         KIND_TOKEN_LENGTH: lambda x: int(float(x)),
@@ -50,7 +51,9 @@ class Configuration(models.Model):
         return self.value
 
     class Meta:
-        unique_together = ('policy', 'kind',)
+        unique_together = (
+            'policy',
+            'kind', )
 
 
 class Rule(models.Model):
@@ -64,8 +67,7 @@ class Rule(models.Model):
 
     KIND_CHOICES = (
         (KIND_DEVICE_SELECTION, _('Device Selection Restriction')),
-        (KIND_EMAIL_DOMAIN_RESTRICTION, _('E-mail Domain Restriction')),
-    )
+        (KIND_EMAIL_DOMAIN_RESTRICTION, _('E-mail Domain Restriction')), )
 
     policy = models.ForeignKey(Policy, related_name='rules')
     kind = models.PositiveSmallIntegerField(choices=KIND_CHOICES)
@@ -77,4 +79,6 @@ class Rule(models.Model):
         return self.definition
 
     class Meta:
-        unique_together = ('policy', 'kind',)
+        unique_together = (
+            'policy',
+            'kind', )

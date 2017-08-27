@@ -19,7 +19,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', '4s+ojyr7#=8c8*i!2hlzkh6(7*&h$!q9rlmnc7m)b_gj+n70qq')
+SECRET_KEY = os.getenv('SECRET_KEY',
+                       '4s+ojyr7#=8c8*i!2hlzkh6(7*&h$!q9rlmnc7m)b_gj+n70qq')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -99,16 +100,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -131,7 +136,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Keyczar settings
-ENCRYPTED_FIELDS_KEYDIR = os.getenv('ENCRYPTED_FIELDS_KEYDIR', os.path.join(BASE_DIR, 'keys'))
+ENCRYPTED_FIELDS_KEYDIR = os.getenv('ENCRYPTED_FIELDS_KEYDIR',
+                                    os.path.join(BASE_DIR, 'keys'))
 
 LOG_DIR = os.path.join(BASE_DIR, '..', 'log')
 
@@ -154,13 +160,14 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 EMAIL_USE_TLS = True
 
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        'mfa.auth.DefaultIntegrationAuthentication',
-    ),
-    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.AcceptHeaderVersioning',
-    'DEFAULT_VERSION': '1.0',
-    'ALLOWED_VERSIONS': '1.0'
+        'mfa.auth.DefaultIntegrationAuthentication', ),
+    'DEFAULT_VERSIONING_CLASS':
+    'rest_framework.versioning.AcceptHeaderVersioning',
+    'DEFAULT_VERSION':
+    '1.0',
+    'ALLOWED_VERSIONS':
+    '1.0'
 }

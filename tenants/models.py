@@ -18,7 +18,7 @@ from policy.models import Policy, Configuration
 
 class Tenant(Entity):
     class Meta:
-        unique_together = ('name',)
+        unique_together = ('name', )
 
     @staticmethod
     def create(name, first_name, last_name, email, password):
@@ -32,8 +32,7 @@ class Tenant(Entity):
                 email=email,
                 password=password,
                 first_name=first_name,
-                last_name=last_name
-            )
+                last_name=last_name)
 
             # create all initial groups
             initial_groups = TenantGroup.create_initial_tenant_groups(tenant)
@@ -58,7 +57,9 @@ class TenantGroup(models.Model):
         Group, related_name='tenant_group', on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ('tenant', 'name',)
+        unique_together = (
+            'tenant',
+            'name', )
 
     @staticmethod
     def create(tenant, name):
@@ -66,12 +67,13 @@ class TenantGroup(models.Model):
         return TenantGroup.objects.create(
             tenant=tenant,
             name=group_name,
-            group=Group.objects.create(name=group_name)
-        )
+            group=Group.objects.create(name=group_name))
 
     @staticmethod
     def create_initial_tenant_groups(tenant):
-        return [TenantGroup.create(tenant, x) for x in TenantGroup.INITIAL_GROUPS]
+        return [
+            TenantGroup.create(tenant, x) for x in TenantGroup.INITIAL_GROUPS
+        ]
 
 
 class TenantUser(models.Model):
@@ -87,8 +89,7 @@ class TenantUser(models.Model):
             username=email,
             email=email,
             first_name=first_name,
-            last_name=last_name
-        )
+            last_name=last_name)
 
         user.set_password(password)
         user.save()
@@ -127,25 +128,27 @@ class Integration(Entity):
             notes=notes,
             policy=Policy.objects.create(name=name),
             access_key=get_random_string(Integration.ACCESS_KEY_LENGTH),
-            secret_key=get_random_string(Integration.SECRET_KEY_LENGTH),
-        )
+            secret_key=get_random_string(Integration.SECRET_KEY_LENGTH), )
 
     def generate_auth_session_token(self, username, expires_at):
         return ''
 
     def generate_auth_session_portal_url(self, kind, username, expires_at):
-        return self.endpoint + '/' + kind + '/?token=' + self.generate_auth_session_token(username, expires_at)
+        return self.endpoint + '/' + kind + '/?token=' + self.generate_auth_session_token(
+            username, expires_at)
 
     def enroll(self, username):
         client = Client.objects.filter(
             integration=self, username=username).first()
         if client:
-            return None, errors.MFAError('username `{0}` already exists', username)
+            return None, errors.MFAError('username `{0}` already exists',
+                                         username)
 
         Enrollment = apps.get_model('enrollment', 'Enrollment')
 
         expiration_mins = self.policy.get_configuration(
-            Configuration.KIND_ENROLLMENT_EXPIRATION_IN_MINUTES) or Enrollment.DEFAULT_EXPIRATION_IN_MINUTES
+            Configuration.KIND_ENROLLMENT_EXPIRATION_IN_MINUTES
+        ) or Enrollment.DEFAULT_EXPIRATION_IN_MINUTES
         expires_at = timezone.now() + timedelta(minutes=expiration_mins)
 
         entity = Enrollment.objects.create(
@@ -155,8 +158,7 @@ class Integration(Entity):
             binding_context=None,
             expires_at=expires_at,
             portal_url=self.generate_auth_session_portal_url(
-                'enrollment', username, expires_at)
-        )
+                'enrollment', username, expires_at))
 
         return entity, None
 
@@ -170,11 +172,13 @@ class Integration(Entity):
             device = client.devices.filter(pk=data['device_pk']).first()
             if not device:
                 return None, errors.MFAInconsistentStateError(
-                    'device `{0}` does not exist for client `{1}`'.format(data['device_pk'], client.username))
+                    'device `{0}` does not exist for client `{1}`'.format(
+                        data['device_pk'], client.username))
 
         # obtain the challenge expiration in minute
         expiration_mins = self.policy.get_configuration(
-            Configuration.KIND_CHALLENGE_EXPIRATION_IN_MINUTES) or Challenge.DEFAULT_EXPIRATION_IN_MINUTES
+            Configuration.KIND_CHALLENGE_EXPIRATION_IN_MINUTES
+        ) or Challenge.DEFAULT_EXPIRATION_IN_MINUTES
 
         expires_at = timezone.now() + timedelta(minutes=expiration_mins)
 
@@ -186,8 +190,7 @@ class Integration(Entity):
             reference=data['reference'] if 'reference' in data else '',
             expires_at=expires_at,
             portal_url=self.generate_auth_session_portal_url(
-                'challenge', client.username, expires_at)
-        )
+                'challenge', client.username, expires_at))
 
         return entity, None
 
@@ -210,8 +213,7 @@ class Client(Entity):
     STATUS_CHOICES = (
         (STATUS_ACTIVE, _('Active')),
         (STATUS_BYPASS, _('Bypass')),
-        (STATUS_INACTIVE, _('Inactive')),
-    )
+        (STATUS_INACTIVE, _('Inactive')), )
 
     integration = models.ForeignKey(Integration, related_name='clients')
     group = models.ForeignKey(

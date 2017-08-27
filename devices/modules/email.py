@@ -64,10 +64,12 @@ class EmailDeviceKindModule(DeviceKindModule):
 
     def _send_secure_token(self, address, policy, device_kind_options):
         # get instance of the communication module
-        mdl = Module.objects.filter(name=device_kind_options['communication_module']).first()
+        mdl = Module.objects.filter(
+            name=device_kind_options['communication_module']).first()
         if not mdl:
             return None, errors.MFAMissingInformationError(
-                'communication module `{0}` does not exist'.format(device_kind_options['communication_module']))
+                'communication module `{0}` does not exist'.format(
+                    device_kind_options['communication_module']))
 
         # generate a secret token
         tk = self._generate_secure_token(policy)
@@ -77,16 +79,22 @@ class EmailDeviceKindModule(DeviceKindModule):
         mdl_instance = mdl.get_instance()
 
         req = mdl_instance.get_request_model(data={
-            'from_email': device_kind_options['from_email'],
-            'recipient': address,
-            'subject': device_kind_options['subject'],
-            'message': device_kind_options['message'].format(token=tk),
-            'html_message': device_kind_options['html_message'].format(token=tk),
+            'from_email':
+            device_kind_options['from_email'],
+            'recipient':
+            address,
+            'subject':
+            device_kind_options['subject'],
+            'message':
+            device_kind_options['message'].format(token=tk),
+            'html_message':
+            device_kind_options['html_message'].format(token=tk),
         })
 
         if not req.is_valid():
             return False, errors.MFAMissingInformationError(
-                'email communication module is not compatible: {0}'.format(','.join(req.errors)))
+                'email communication module is not compatible: {0}'.format(
+                    ','.join(req.errors)))
 
         # delegate sending email
         success, err = mdl_instance.execute(req)
@@ -95,57 +103,66 @@ class EmailDeviceKindModule(DeviceKindModule):
 
         if not success:
             return None, errors.MFAError(
-                'could not send email through module `{0}`'.format(device_kind_options['communication_module']))
+                'could not send email through module `{0}`'.format(
+                    device_kind_options['communication_module']))
 
         return tk, None
 
     def get_configuration_model(self, data):
-        return DeviceKindModule.build_model_instance(EmailDeviceConfigurationModel, data)
+        return DeviceKindModule.build_model_instance(
+            EmailDeviceConfigurationModel, data)
 
     def get_enrollment_prepare_model(self, data):
-        return DeviceKindModule.build_model_instance(EmailDeviceHandlerEnrollmentPreparation, data)
+        return DeviceKindModule.build_model_instance(
+            EmailDeviceHandlerEnrollmentPreparation, data)
 
     def get_device_details_model(self, data):
         return DeviceKindModule.build_model_instance(EmailDeviceDetails, data)
 
     def get_enrollment_completion_model(self, data):
-        return DeviceKindModule.build_model_instance(EmailDeviceHandlerEnrollmentCompletion, data)
+        return DeviceKindModule.build_model_instance(
+            EmailDeviceHandlerEnrollmentCompletion, data)
 
     def get_challenge_completion_model(self, data):
-        return DeviceKindModule.build_model_instance(EmailDeviceChallengeCompletion, data)
+        return DeviceKindModule.build_model_instance(
+            EmailDeviceChallengeCompletion, data)
 
     def get_enrollment_public_details_model(self, data):
         return None
 
     def get_enrollment_private_details_model(self, data):
-        return DeviceKindModule.build_model_instance(EmailDevicePrivateEnrollmentDetails, data)
+        return DeviceKindModule.build_model_instance(
+            EmailDevicePrivateEnrollmentDetails, data)
 
     def enrollment_prepare(self, enrollment):
         # get the email address from the device selection.
-        prep_options, err = self.get_enrollment_prepare_model(enrollment.device_selection.options)
+        prep_options, err = self.get_enrollment_prepare_model(
+            enrollment.device_selection.options)
         if err:
-            return False, errors.MFAInconsistentStateError('expected enrollment preparation information to be valid')
+            return False, errors.MFAInconsistentStateError(
+                'expected enrollment preparation information to be valid')
 
         # get the device kind details
-        device_kind_options, err = self.get_configuration_model(enrollment.device_selection.kind.configuration)
+        device_kind_options, err = self.get_configuration_model(
+            enrollment.device_selection.kind.configuration)
         if err:
             return False, err
 
         # generate and send the token
-        tk, err = self._send_secure_token(prep_options['address'], enrollment.policy,
-                                          device_kind_options)
+        tk, err = self._send_secure_token(
+            prep_options['address'], enrollment.policy, device_kind_options)
 
         if err:
             logger.error('failed to send secure token: {0}'.format(err))
             return False, None
 
-        logger.info('sent token `{0}` to address `{1}`'.format(tk, prep_options['address']))
+        logger.info('sent token `{0}` to address `{1}`'.format(
+            tk, prep_options['address']))
 
         # store token for future need
-        private_details = EmailDevicePrivateEnrollmentDetails(data={
-            'token': tk,
-            'address': prep_options['address']
-        })
+        private_details = EmailDevicePrivateEnrollmentDetails(
+            data={'token': tk,
+                  'address': prep_options['address']})
 
         assert private_details.is_valid()
         enrollment.private_details = private_details.validated_data
@@ -157,22 +174,22 @@ class EmailDeviceKindModule(DeviceKindModule):
         assert not enrollment.is_expired()
 
         # compare given token to privately stored token
-        private_details = EmailDevicePrivateEnrollmentDetails(data=enrollment.private_details)
+        private_details = EmailDevicePrivateEnrollmentDetails(
+            data=enrollment.private_details)
         if not private_details.is_valid():
             return None, errors.MFAInconsistentStateError(
-                'enrollment private details is invalid: {0}'.format(private_details.errors))
+                'enrollment private details is invalid: {0}'.format(
+                    private_details.errors))
 
         # if the token don't match, fail.
         if private_details.validated_data['token'] != data['token']:
-            return None, errors.MFASecurityError('token mismatch, expected `{0}` however received `{1}`'.format(
-                private_details.validated_data['token'],
-                data['token']
-            ))
+            return None, errors.MFASecurityError(
+                'token mismatch, expected `{0}` however received `{1}`'.format(
+                    private_details.validated_data['token'], data['token']))
 
         # extract the device details
-        details = EmailDeviceDetails(data={
-            'address': private_details.validated_data['adress']
-        })
+        details = EmailDeviceDetails(
+            data={'address': private_details.validated_data['adress']})
 
         assert details.is_valid()
 
@@ -180,7 +197,8 @@ class EmailDeviceKindModule(DeviceKindModule):
         device = Device()
 
         device.name = u'Email [@{0}]'.format(
-            EmailDeviceKindModule.mask_address(private_details.validated_data['adress']))
+            EmailDeviceKindModule.mask_address(private_details.validated_data[
+                'adress']))
 
         device.kind = enrollment.device_selection.kind
         device.enrollment = enrollment
@@ -200,19 +218,20 @@ class EmailDeviceKindModule(DeviceKindModule):
             return False, err
 
         # get the device kind details
-        device_kind_options, err = self.get_configuration_model(challenge.device.kind.options)
+        device_kind_options, err = self.get_configuration_model(
+            challenge.device.kind.options)
         if err:
             return False, err
 
         # create and end token
-        tk, err = self._send_secure_token(device['address'], challenge.policy, device_kind_options)
+        tk, err = self._send_secure_token(device['address'], challenge.policy,
+                                          device_kind_options)
         if err:
             return False, err
 
         # store for future use
-        private_details = EmailDevicePrivateChallengeDetails(data={
-            'token': tk
-        })
+        private_details = EmailDevicePrivateChallengeDetails(
+            data={'token': tk})
 
         assert private_details.is_valid()
 

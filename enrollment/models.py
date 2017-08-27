@@ -31,15 +31,17 @@ class Enrollment(Entity):
         (STATUS_IN_PROGRESS, _('In Progress')),
         (STATUS_COMPLETE, _('Complete')),
         (STATUS_FAILED, _('Failed')),
-        (STATUS_EXPIRED, _('Expired')),
-    )
+        (STATUS_EXPIRED, _('Expired')), )
 
     integration = models.ForeignKey(Integration, related_name='enrollments')
     client = models.OneToOneField(
         Client, related_name='enrollment', blank=True, null=True)
     policy = models.ForeignKey(Policy, related_name='enrollments')
     device_selection = models.OneToOneField(
-        'devices.DeviceSelection', related_name='enrollment', blank=True, null=True)
+        'devices.DeviceSelection',
+        related_name='enrollment',
+        blank=True,
+        null=True)
     username = models.CharField(max_length=64)
     binding_context = models.OneToOneField(
         BindingContext, related_name='enrollments', blank=True, null=True)
@@ -58,7 +60,8 @@ class Enrollment(Entity):
 
     @staticmethod
     def get_by_integration_and_pk(pk, integration, **kwargs):
-        return Enrollment.objects.filter(pk=pk, client__integration=integration, **kwargs).first()
+        return Enrollment.objects.filter(
+            pk=pk, client__integration=integration, **kwargs).first()
 
     def _validate_device_selection(self):
         allowed_devices = self.policy.get_rule(Rule.KIND_DEVICE_SELECTION)
@@ -67,14 +70,15 @@ class Enrollment(Entity):
 
         if self.device_selection.kind.name not in allowed_devices:
             raise ValidationError(
-                'device kind `{0}` is not in list of allowed devices: {1}'.format(self.device_selection.kind.name,
-                                                                                  allowed_devices))
+                'device kind `{0}` is not in list of allowed devices: {1}'.
+                format(self.device_selection.kind.name, allowed_devices))
 
     def clean(self):
         # make sure we are not
         if self.client and self.status != Enrollment.STATUS_COMPLETE:
             raise ValidationError(
-                'a client entity cannot be assigned to this enrollment unless it is marked as complete')
+                'a client entity cannot be assigned to this enrollment unless it is marked as complete'
+            )
 
         self._validate_device_selection()
 
@@ -94,11 +98,12 @@ class Enrollment(Entity):
         assert self.device_selection is not None
 
         # get the device module, and prepare enrollment
-        _, err = self.device_selection.kind.get_module().enrollment_prepare(self)
+        _, err = self.device_selection.kind.get_module().enrollment_prepare(
+            self)
         if err:
-            logger.error('failed to prepare enrollment `{0}` for device kind `{1}`: {2}'.format(self.pk,
-                                                                                                self.device_selection.get_kind_display(),
-                                                                                                err))
+            logger.error(
+                'failed to prepare enrollment `{0}` for device kind `{1}`: {2}'.
+                format(self.pk, self.device_selection.get_kind_display(), err))
             return False, err
 
         self.status = Enrollment.STATUS_IN_PROGRESS
@@ -108,40 +113,43 @@ class Enrollment(Entity):
 
     def select_device(self, kind, options=None):
         if self.device_selection:
-            return False, errors.MFAError('enrollment `{0}` already has a device selection of kind `{1}`'.format(self.pk,
-                                                                                                                self.device_selection.kind))
+            return False, errors.MFAError(
+                'enrollment `{0}` already has a device selection of kind `{1}`'.
+                format(self.pk, self.device_selection.kind))
 
-        prepare_data, err = kind.get_module().get_enrollment_prepare_model(options)
+        prepare_data, err = kind.get_module().get_enrollment_prepare_model(
+            options)
         if err:
-            logger.info('failed to prepare enrollment `{0}` for device kind `{1}`: {2}'.format(
-                self.pk, kind.name, err
-            ))
+            logger.info(
+                'failed to prepare enrollment `{0}` for device kind `{1}`: {2}'.
+                format(self.pk, kind.name, err))
 
             return False, err
 
         DeviceSelection = apps.get_model('devices', 'DeviceSelection')
 
         self.device_selection = DeviceSelection.objects.create(
-            kind=kind,
-            options=prepare_data
-        )
+            kind=kind, options=prepare_data)
 
         self.save()
-        logger.info('preparing enrollment `{0}` for device election of kind `{1}`'.format(self.pk,
-                                                                                          self.device_selection.kind.name))
+        logger.info(
+            'preparing enrollment `{0}` for device election of kind `{1}`'.
+            format(self.pk, self.device_selection.kind.name))
         return self.prepare()
 
     def complete(self, payload):
         if self.status != Enrollment.STATUS_IN_PROGRESS:
-            return False, errors.MFAInconsistentStateError('enrollment `{0}` is in state `{1}` and cannot be completed',
-                                                           self.pk, self.get_status_display())
+            return False, errors.MFAInconsistentStateError(
+                'enrollment `{0}` is in state `{1}` and cannot be completed',
+                self.pk, self.get_status_display())
 
         with transaction.atomic():
             assert self.status == Enrollment.STATUS_IN_PROGRESS
             assert self.device_selection is not None
 
-            logger.info('processing completion for enrollment `{0}` with `{1}`'.format(
-                self.pk, payload))
+            logger.info(
+                'processing completion for enrollment `{0}` with `{1}`'.format(
+                    self.pk, payload))
 
             # get the device module
             device_module = self.device_selection.kind.get_module()
@@ -153,7 +161,8 @@ class Enrollment(Entity):
             # if we couldn't parse the data, fail
             if err:
                 logger.error(
-                    'failed to retrieve enrollment completion model: {0}'.format(err))
+                    'failed to retrieve enrollment completion model: {0}'.
+                    format(err))
                 return self._fail_enrollment(err)
 
             # attempt to complete the enrollment
@@ -167,8 +176,7 @@ class Enrollment(Entity):
             client = Client.objects.create(
                 name=self.username,
                 integration=self.integration,
-                username=self.username
-            )
+                username=self.username)
 
             # update the device to reflect the client entity
             device.client = client

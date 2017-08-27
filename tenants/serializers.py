@@ -21,7 +21,13 @@ class IntegrationClientAuthDecisionSerializer(serializers.Serializer):
 class IntegrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Integration
-        fields = ('pk', 'name', 'secret_key', 'access_key', 'endpoint', 'notes',)
+        fields = (
+            'pk',
+            'name',
+            'secret_key',
+            'access_key',
+            'endpoint',
+            'notes', )
 
 
 class CreateTenantAdministratorSerializer(serializers.Serializer):
@@ -44,7 +50,9 @@ class CreateIntegrationSerializer(serializers.Serializer):
 class TenantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tenant
-        fields = ('pk', 'name',)
+        fields = (
+            'pk',
+            'name', )
 
 
 class IntegrationClientAuthDecisionResponseSerializer(serializers.Serializer):
@@ -54,11 +62,18 @@ class IntegrationClientAuthDecisionResponseSerializer(serializers.Serializer):
     RESULT_DENY = 4
 
     RESULT_CHOICES = (
-        (RESULT_ENROLL, _('Enroll'),),
-        (RESULT_ENROLL, _('Challenge'),),
-        (RESULT_ENROLL, _('Allow'),),
-        (RESULT_ENROLL, _('Deny'),),
-    )
+        (
+            RESULT_ENROLL,
+            _('Enroll'), ),
+        (
+            RESULT_ENROLL,
+            _('Challenge'), ),
+        (
+            RESULT_ENROLL,
+            _('Allow'), ),
+        (
+            RESULT_ENROLL,
+            _('Deny'), ), )
 
     result = serializers.ChoiceField(choices=RESULT_CHOICES)
     devices = DeviceSerializer(many=True, required=False)

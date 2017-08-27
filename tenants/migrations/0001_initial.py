@@ -21,29 +21,43 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='BindingContext',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('client_ip_address', models.GenericIPAddressField(blank=True, null=True)),
-                ('client_browser_fingerprint', models.CharField(blank=True, max_length=256, null=True)),
-            ],
-        ),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID')),
+                ('client_ip_address', models.GenericIPAddressField(
+                    blank=True, null=True)),
+                ('client_browser_fingerprint', models.CharField(
+                    blank=True, max_length=256, null=True)),
+            ], ),
         migrations.CreateModel(
             name='Client',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID')),
                 ('name', models.CharField(max_length=128)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('last_updated_at', models.DateTimeField(auto_now=True)),
                 ('active', models.BooleanField(default=True)),
                 ('username', models.CharField(max_length=64)),
-                ('email', models.EmailField(blank=True, max_length=254, null=True)),
-                ('status',
-                 models.PositiveSmallIntegerField(choices=[(1, 'Active'), (2, 'Bypass'), (3, 'Inactive')], default=1)),
-            ],
-        ),
+                ('email', models.EmailField(
+                    blank=True, max_length=254, null=True)),
+                ('status', models.PositiveSmallIntegerField(
+                    choices=[(1, 'Active'), (2, 'Bypass'), (3, 'Inactive')],
+                    default=1)),
+            ], ),
         migrations.CreateModel(
             name='ClientGroup',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID')),
                 ('name', models.CharField(max_length=128)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('last_updated_at', models.DateTimeField(auto_now=True)),
@@ -51,88 +65,114 @@ class Migration(migrations.Migration):
             ],
             options={
                 'abstract': False,
-            },
-        ),
+            }, ),
         migrations.CreateModel(
             name='Integration',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID')),
                 ('name', models.CharField(max_length=128)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('last_updated_at', models.DateTimeField(auto_now=True)),
                 ('active', models.BooleanField(default=True)),
                 ('access_key', models.CharField(max_length=128, unique=True)),
-                ('secret_key', encrypted_fields.fields.EncryptedCharField(max_length=128, unique=True)),
+                ('secret_key', encrypted_fields.fields.EncryptedCharField(
+                    max_length=128, unique=True)),
                 ('endpoint', models.URLField(blank=True)),
                 ('notes', models.TextField(blank=True, null=True)),
-                ('uid', models.CharField(blank=True, max_length=16, null=True)),
-                ('policy', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='integration',
-                                                to='policy.Policy')),
+                ('uid', models.CharField(blank=True, max_length=16,
+                                         null=True)),
+                ('policy', models.OneToOneField(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='integration',
+                    to='policy.Policy')),
             ],
             options={
                 'abstract': False,
-            },
-        ),
+            }, ),
         migrations.CreateModel(
             name='Tenant',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID')),
                 ('name', models.CharField(max_length=128)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('last_updated_at', models.DateTimeField(auto_now=True)),
                 ('active', models.BooleanField(default=True)),
-            ],
-        ),
+            ], ),
         migrations.CreateModel(
             name='TenantGroup',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID')),
                 ('name', models.CharField(max_length=64)),
-                ('group', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='tenant_group',
-                                               to='auth.Group')),
-                ('tenant', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='groups',
-                                             to='tenants.Tenant')),
-            ],
-        ),
+                ('group', models.OneToOneField(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='tenant_group',
+                    to='auth.Group')),
+                ('tenant', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='groups',
+                    to='tenants.Tenant')),
+            ], ),
         migrations.CreateModel(
             name='TenantUser',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('groups', models.ManyToManyField(related_name='users', to='tenants.TenantGroup')),
-                ('tenant', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='users',
-                                             to='tenants.Tenant')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='tenant_user',
-                                              to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID')),
+                ('groups', models.ManyToManyField(
+                    related_name='users', to='tenants.TenantGroup')),
+                ('tenant', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='users',
+                    to='tenants.Tenant')),
+                ('user', models.OneToOneField(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='tenant_user',
+                    to=settings.AUTH_USER_MODEL)),
+            ], ),
         migrations.AlterUniqueTogether(
             name='tenant',
-            unique_together=set([('name',)]),
-        ),
+            unique_together=set([('name', )]), ),
         migrations.AddField(
             model_name='integration',
             name='tenant',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='integrations',
-                                    to='tenants.Tenant'),
-        ),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='integrations',
+                to='tenants.Tenant'), ),
         migrations.AddField(
             model_name='client',
             name='group',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
-                                    related_name='groups', to='tenants.ClientGroup'),
-        ),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='groups',
+                to='tenants.ClientGroup'), ),
         migrations.AddField(
             model_name='client',
             name='integration',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='clients',
-                                    to='tenants.Integration'),
-        ),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='clients',
+                to='tenants.Integration'), ),
         migrations.AlterUniqueTogether(
             name='tenantgroup',
-            unique_together=set([('tenant', 'name')]),
-        ),
+            unique_together=set([('tenant', 'name')]), ),
         migrations.AlterUniqueTogether(
             name='client',
-            unique_together=set([('integration', 'username')]),
-        ),
+            unique_together=set([('integration', 'username')]), ),
     ]

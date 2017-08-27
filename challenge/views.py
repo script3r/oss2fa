@@ -16,7 +16,8 @@ class ChallengeList(APIView):
     def post(self, request, format=None):
         serializer = CreateChallengeSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         # get the integration
         integration = request.auth
@@ -26,17 +27,19 @@ class ChallengeList(APIView):
         client = integration.clients.filter(username=data['username']).first()
 
         if not client:
-            logger.error(
-                'attempt to challenge invalid username `{0}`'.format(data['username']))
+            logger.error('attempt to challenge invalid username `{0}`'.format(
+                data['username']))
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         # create a challenge, and return the results
         challenge, err = request.auth.challenge(client, data)
         if err:
-            logger.error('failed to create challenge for username `{0}`: {1}'.format(
-                client.username, err))
+            logger.error('failed to create challenge for username `{0}`: {1}'.
+                         format(client.username, err))
             return Response(err, status=status.HTTP_400_BAD_REQUEST)
-        return Response(ChallengeSerializer(challenge).data, status=status.HTTP_201_CREATED)
+        return Response(
+            ChallengeSerializer(challenge).data,
+            status=status.HTTP_201_CREATED)
 
 
 class ChallengeDetailView(APIView):
@@ -46,7 +49,8 @@ class ChallengeDetailView(APIView):
         if not challenge:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        return Response(ChallengeSerializer(challenge).data, status=status.HTTP_200_OK)
+        return Response(
+            ChallengeSerializer(challenge).data, status=status.HTTP_200_OK)
 
 
 class ChallengeCompletionView(APIView):
@@ -58,8 +62,9 @@ class ChallengeCompletionView(APIView):
         _, err = challenge.complete(request.data)
 
         if err:
-            logger.error(
-                'failed to complete challenge `{0}`: {1}'.format(pk, err.message))
+            logger.error('failed to complete challenge `{0}`: {1}'.format(
+                pk, err.message))
             return Response(err.message, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(ChallengeSerializer(challenge).data, status=status.HTTP_200_OK)
+        return Response(
+            ChallengeSerializer(challenge).data, status=status.HTTP_200_OK)

@@ -19,22 +19,24 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='device',
             name='client',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='devices',
-                                    to='tenants.Client'),
-        ),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='devices',
+                to='tenants.Client'), ),
         migrations.AddField(
             model_name='device',
             name='enrollment',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='enrollment.Enrollment'),
-        ),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='enrollment.Enrollment'), ),
         migrations.AddField(
             model_name='device',
             name='kind',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='devices',
-                                    to='devices.DeviceKind'),
-        ),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='devices',
+                to='devices.DeviceKind'), ),
         migrations.AlterUniqueTogether(
             name='device',
-            unique_together=set([('name', 'client')]),
-        ),
+            unique_together=set([('name', 'client')]), ),
     ]

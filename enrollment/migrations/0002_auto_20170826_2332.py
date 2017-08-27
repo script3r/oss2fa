@@ -20,35 +20,47 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='enrollment',
             name='binding_context',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
-                                       related_name='enrollments', to='tenants.BindingContext'),
-        ),
+            field=models.OneToOneField(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='enrollments',
+                to='tenants.BindingContext'), ),
         migrations.AddField(
             model_name='enrollment',
             name='client',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
-                                       related_name='enrollment', to='tenants.Client'),
-        ),
+            field=models.OneToOneField(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='enrollment',
+                to='tenants.Client'), ),
         migrations.AddField(
             model_name='enrollment',
             name='device_selection',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
-                                       related_name='enrollment', to='devices.DeviceSelection'),
-        ),
+            field=models.OneToOneField(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='enrollment',
+                to='devices.DeviceSelection'), ),
         migrations.AddField(
             model_name='enrollment',
             name='integration',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='enrollments',
-                                    to='tenants.Integration'),
-        ),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='enrollments',
+                to='tenants.Integration'), ),
         migrations.AddField(
             model_name='enrollment',
             name='policy',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='enrollments',
-                                    to='policy.Policy'),
-        ),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='enrollments',
+                to='policy.Policy'), ),
         migrations.AddIndex(
             model_name='enrollment',
-            index=models.Index(fields=['integration', 'username'], name='enrollment__integra_3c1edd_idx'),
-        ),
+            index=models.Index(
+                fields=['integration', 'username'],
+                name='enrollment__integra_3c1edd_idx'), ),
     ]

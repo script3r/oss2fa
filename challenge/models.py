@@ -30,8 +30,7 @@ class Challenge(Entity):
         (STATUS_IN_PROGRESS, _('In Progress')),
         (STATUS_COMPLETE, _('Complete')),
         (STATUS_FAILED, _('Failed')),
-        (STATUS_EXPIRED, _('Expired')),
-    )
+        (STATUS_EXPIRED, _('Expired')), )
 
     client = models.ForeignKey(Client, related_name='challenges')
     device = models.ForeignKey('devices.Device', related_name='challenges')
@@ -56,15 +55,18 @@ class Challenge(Entity):
 
     @staticmethod
     def get_by_integration_and_pk(pk, integration, **kwargs):
-        return Challenge.objects.filter(pk=pk, client__integration=integration, **kwargs).first()
+        return Challenge.objects.filter(
+            pk=pk, client__integration=integration, **kwargs).first()
 
     def complete(self, payload):
         if self.status != Challenge.STATUS_IN_PROGRESS:
             return False, errors.MFAInconsistentStateError(
-                'challenge `{0}` is in state `{1}` and cannot be completed', self.pk, self.get_status_display())
+                'challenge `{0}` is in state `{1}` and cannot be completed',
+                self.pk, self.get_status_display())
 
         if self.is_expired():
-            return False, errors.MFAInconsistentStateError('challenge `{0}` expired at `{1}`', self.pk, self.expires_at)
+            return False, errors.MFAInconsistentStateError(
+                'challenge `{0}` expired at `{1}`', self.pk, self.expires_at)
 
         logger.info(
             'completing challenge `{0}` with `{1}`'.format(self.pk, payload))
@@ -78,8 +80,8 @@ class Challenge(Entity):
             # get the completion model
             model, err = module.get_challenge_completion_model(payload)
             if err:
-                logger.error(
-                    'failed to get challenge completion model: {0}'.format(err))
+                logger.error('failed to get challenge completion model: {0}'.
+                             format(err))
 
                 self.status = Challenge.STATUS_FAILED
                 self.save()
@@ -89,8 +91,8 @@ class Challenge(Entity):
             # complete the challenge
             success, err = module.challenge_complete(self, model)
             if err:
-                logger.error(
-                    'failed to complete challenge `{0}`: {1}'.format(self.pk, err))
+                logger.error('failed to complete challenge `{0}`: {1}'.format(
+                    self.pk, err))
 
                 self.status = Challenge.STATUS_FAILED
                 self.save()

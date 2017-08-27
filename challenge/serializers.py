@@ -14,4 +14,10 @@ class CreateChallengeSerializer(serializers.Serializer):
 class ChallengeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Challenge
-        fields = ('pk', 'status', 'public_details', 'reference', 'created_at', 'expires_at',)
+        fields = (
+            'pk',
+            'status',
+            'public_details',
+            'reference',
+            'created_at',
+            'expires_at', )

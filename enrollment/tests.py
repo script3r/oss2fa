@@ -22,14 +22,12 @@ class BaseEnrollmentTestCase(TestCase):
             first_name='John',
             last_name='Doe',
             email='john.doe@email.com',
-            password='john.doe'
-        )
+            password='john.doe')
 
         Integration.create(
             tenant=Tenant.objects.filter(name='Test Tenant').first(),
             name=BaseEnrollmentTestCase.TEST_INTEGRATION_NAME,
-            notes='Test Notes'
-        )
+            notes='Test Notes')
 
 
 class EnrollmentTestCase(BaseEnrollmentTestCase):
@@ -49,13 +47,10 @@ class EnrollmentTestCase(BaseEnrollmentTestCase):
                 'secret_length': 32,
                 'valid_window': 1,
                 'interval': 30,
-            }
-        )
+            })
 
         Module.objects.create(
-            name='contrib.communications.DjangoSMTPMailer',
-            configuration={}
-        )
+            name='contrib.communications.DjangoSMTPMailer', configuration={})
 
         DeviceKind.objects.create(
             name='Email',
@@ -66,10 +61,10 @@ class EnrollmentTestCase(BaseEnrollmentTestCase):
                 'subject': 'Your 2fa access token',
                 'message': 'Your 2fa access token is `{token}`',
                 'html_message': 'Your 2fa access token is `{token}`',
-                'communication_module': 'contrib.communications.DjangoSMTPMailer',
+                'communication_module':
+                'contrib.communications.DjangoSMTPMailer',
                 'communication_module_settings': {},
-            }
-        )
+            })
 
         e = Enrollment()
 
@@ -85,18 +80,20 @@ class EnrollmentTestCase(BaseEnrollmentTestCase):
     def test_can_complete_email_enrollment(self):
         e = Enrollment.objects.get(username=EnrollmentTestCase.TEST_USERNAME)
 
-        prep_data = EmailDeviceHandlerEnrollmentPreparation(data={
-            'address': 'script3r@gmail.com'
-        })
+        prep_data = EmailDeviceHandlerEnrollmentPreparation(
+            data={'address': 'script3r@gmail.com'})
 
         self.assertTrue(prep_data.is_valid())
 
-        ok, err = e.select_device(DeviceKind.objects.filter(name='Email').first(), prep_data.validated_data)
+        ok, err = e.select_device(
+            DeviceKind.objects.filter(name='Email').first(),
+            prep_data.validated_data)
 
         self.assertIsNone(err)
         self.assertTrue(ok)
 
-        private_details = EmailDevicePrivateEnrollmentDetails(data=e.private_details)
+        private_details = EmailDevicePrivateEnrollmentDetails(
+            data=e.private_details)
         self.assertTrue(private_details.is_valid())
 
     def test_can_complete_totp_enrollment(self):
@@ -111,8 +108,8 @@ class EnrollmentTestCase(BaseEnrollmentTestCase):
         public_details = OTPEnrollmentPublicDetails(data=e.public_details)
 
         self.assertTrue(public_details.is_valid())
-        self.assertTrue(public_details.validated_data[
-                            'provisioning_uri'].startswith('otpauth://'))
+        self.assertTrue(public_details.validated_data['provisioning_uri']
+                        .startswith('otpauth://'))
 
         private_details = OTPEnrollmentPrivateDetails(data=e.private_details)
         self.assertTrue(private_details.is_valid())
@@ -120,14 +117,12 @@ class EnrollmentTestCase(BaseEnrollmentTestCase):
         totp = pyotp.TOTP(
             s=private_details.validated_data['secret'],
             interval=private_details.validated_data['interval'],
-            digits=private_details.validated_data['digits']
-        )
+            digits=private_details.validated_data['digits'])
 
         self.assertTrue(e.status == Enrollment.STATUS_IN_PROGRESS)
 
-        completion = OTPDeviceHandlerEnrollmentCompletion(data={
-            'token': totp.now()
-        })
+        completion = OTPDeviceHandlerEnrollmentCompletion(
+            data={'token': totp.now()})
 
         self.assertTrue(completion.is_valid())
         ok, err = e.complete(completion.validated_data)

@@ -32,12 +32,8 @@ class DjangoSMTPMailer(object):
 
         data = request.validated_data
 
-        res = send_mail(
-            data['subject'],
-            data['message'],
-            data['from_email'],
-            [data['recipient']]
-        )
+        res = send_mail(data['subject'], data['message'], data['from_email'],
+                        [data['recipient']])
 
         if res == 0:
             return False, MFAError(_('Could not send mail'))
