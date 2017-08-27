@@ -51,6 +51,7 @@ class TenantIntegrationListView(APIView):
 
 
 class TenantsListView(APIView):
+
     def post(self, request, format=None):
         serializer = CreateTenantSerializer(data=request.data)
         if not serializer.is_valid():

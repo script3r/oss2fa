@@ -4,18 +4,23 @@ import pyotp
 from django.test import TestCase
 from django.utils import timezone
 
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
+
 from contrib.models import Module
 from devices.models import DeviceKind
-from devices.modules.email import EmailDevicePrivateEnrollmentDetails, EmailDeviceHandlerEnrollmentPreparation
+from devices.modules.email import EmailDeviceEnrollmentPrivateDetails, EmailDeviceEnrollmentPrepareRequest, EmailDeviceEnrollmentCompleteRequest
 from devices.modules.otp import OTPConfiguration, OTPEnrollmentPublicDetails, OTPEnrollmentPrivateDetails, \
     OTPDeviceHandlerEnrollmentCompletion
 from enrollment.models import Enrollment
 from tenants.models import Tenant, Integration
 
+BASE_TEST_INTEGRATION_NAME = 'Test Integration'
+BASE_TEST_USERNAME = 'test'
+
 
 class BaseEnrollmentTestCase(TestCase):
-    TEST_INTEGRATION_NAME = 'Test Integration'
-
     def setUp(self):
         Tenant.create(
             name='Test Tenant',
@@ -26,15 +31,8 @@ class BaseEnrollmentTestCase(TestCase):
 
         Integration.create(
             tenant=Tenant.objects.filter(name='Test Tenant').first(),
-            name=BaseEnrollmentTestCase.TEST_INTEGRATION_NAME,
+            name=BASE_TEST_INTEGRATION_NAME,
             notes='Test Notes')
-
-
-class EnrollmentTestCase(BaseEnrollmentTestCase):
-    TEST_USERNAME = 'test'
-
-    def setUp(self):
-        super(EnrollmentTestCase, self).setUp()
 
         DeviceKind.objects.create(
             name='OTP',
@@ -62,48 +60,64 @@ class EnrollmentTestCase(BaseEnrollmentTestCase):
                 'message': 'Your 2fa access token is `{token}`',
                 'html_message': 'Your 2fa access token is `{token}`',
                 'communication_module':
-                'contrib.communications.DjangoSMTPMailer',
+                    'contrib.communications.DjangoSMTPMailer',
                 'communication_module_settings': {},
             })
+
+
+class EnrollmentModelTestCase(BaseEnrollmentTestCase):
+    def setUp(self):
+        super(EnrollmentModelTestCase, self).setUp()
 
         e = Enrollment()
 
         e.integration = Integration.objects.filter(
-            name=BaseEnrollmentTestCase.TEST_INTEGRATION_NAME).first()
+            name=BASE_TEST_INTEGRATION_NAME).first()
 
         e.policy = e.integration.policy
-        e.username = EnrollmentTestCase.TEST_USERNAME
+        e.username = BASE_TEST_USERNAME
         e.expires_at = timezone.now() + datetime.timedelta(minutes=10)
 
         e.save()
 
     def test_can_complete_email_enrollment(self):
-        e = Enrollment.objects.get(username=EnrollmentTestCase.TEST_USERNAME)
+        e = Enrollment.objects.get(username=BASE_TEST_USERNAME)
 
-        prep_data = EmailDeviceHandlerEnrollmentPreparation(
+        prep_data = EmailDeviceEnrollmentPrepareRequest(
             data={'address': 'script3r@gmail.com'})
 
         self.assertTrue(prep_data.is_valid())
 
-        ok, err = e.select_device(
-            DeviceKind.objects.filter(name='Email').first(),
-            prep_data.validated_data)
+        err = e.prepare({
+            'kind': DeviceKind.objects.get(name='Email'),
+            'options': prep_data.validated_data
+        })
 
         self.assertIsNone(err)
-        self.assertTrue(ok)
 
-        private_details = EmailDevicePrivateEnrollmentDetails(
+        private_details = EmailDeviceEnrollmentPrivateDetails(
             data=e.private_details)
+
         self.assertTrue(private_details.is_valid())
 
-    def test_can_complete_totp_enrollment(self):
-        e = Enrollment.objects.get(username=EnrollmentTestCase.TEST_USERNAME)
+        completion_data = EmailDeviceEnrollmentCompleteRequest(data={
+            'token': private_details.validated_data['token']
+        })
 
-        success, err = e.select_device(
-            DeviceKind.objects.filter(name='OTP').first())
+        self.assertTrue(completion_data.is_valid())
+
+        err = e.complete(completion_data.validated_data)
+        self.assertIsNone(err)
+
+    def test_can_complete_totp_enrollment(self):
+        e = Enrollment.objects.get(username=BASE_TEST_USERNAME)
+
+        err = e.prepare({
+            'kind': DeviceKind.objects.get(name='OTP'),
+            'options': None
+        })
 
         self.assertIsNone(err)
-        self.assertTrue(success)
 
         public_details = OTPEnrollmentPublicDetails(data=e.public_details)
 
@@ -125,7 +139,41 @@ class EnrollmentTestCase(BaseEnrollmentTestCase):
             data={'token': totp.now()})
 
         self.assertTrue(completion.is_valid())
-        ok, err = e.complete(completion.validated_data)
+        err = e.complete(completion.validated_data)
 
         self.assertIsNone(err)
-        self.assertTrue(ok)
+
+
+class EnrollmentAPITestCase(BaseEnrollmentTestCase, APITestCase):
+    def setUp(self):
+        super(EnrollmentAPITestCase, self).setUp()
+
+        self._integration = Integration.objects.get(name=BASE_TEST_INTEGRATION_NAME)
+        self._additional_headers = {
+            'X_INTEGRATION_TOKEN': self._integration.access_key
+        }
+
+    def test_create_and_complete_totp_enrollment(self):
+        username = BASE_TEST_USERNAME + '_1'
+
+        url = reverse('enrollment-list')
+        data = {'username': username}
+
+        res = self.client.post(url, data, format='json', headers=self._additional_headers)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Enrollment.objects.filter(username=username, integration=self._integration).count(), 1)
+
+        doc = res.json()
+        url = reverse('enrollment-detail-prepare-device', kwargs={'pk': doc['pk']})
+
+        data = {
+            'kind': DeviceKind.objects.get(name='OTP').pk,
+            'options': {}
+        }
+
+        res = self.client.post(url, data, format='json', headers=self._additional_headers)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        doc = res.json()
+        self.assertTrue('provisioning_uri' in doc['public_details'])

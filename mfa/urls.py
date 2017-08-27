@@ -17,7 +17,7 @@ from django.conf.urls import url
 from django.contrib import admin
 
 from challenge.views import ChallengeList, ChallengeDetailView, ChallengeCompletionView
-from enrollment.views import EnrollmentList, EnrollmentDetail, EnrollmentCompletion, EnrollmentDeviceSelection
+from enrollment.views import EnrollmentList, EnrollmentDetail, EnrollmentCompletion, EnrollmentDevicePreparation
 from tenants.views import IntegrationClientAuthDecision, TenantsListView, TenantIntegrationListView
 
 urlpatterns = [
@@ -36,9 +36,9 @@ urlpatterns = [
     url(r'^integration/enrollments/(?P<pk>[0-9]+)/complete',
         EnrollmentCompletion.as_view(),
         name='enrollment-complete'),
-    url(r'^integration/enrollments/(?P<pk>[0-9]+)/device-selection',
-        EnrollmentDeviceSelection.as_view(),
-        name='enrollment-device-selection'),
+    url(r'^integration/enrollments/(?P<pk>[0-9]+)/prepare-device',
+        EnrollmentDevicePreparation.as_view(),
+        name='enrollment-detail-prepare-device'),
     url(r'^integration/enrollments/(?P<pk>[0-9]+)',
         EnrollmentDetail.as_view(),
         name='enrollment-detail'),

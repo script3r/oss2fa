@@ -1,8 +1,12 @@
 from __future__ import unicode_literals
 
+import string
 from abc import ABCMeta, abstractmethod
 
+from django.utils.crypto import get_random_string
+
 from core import errors
+from policy.models import Configuration
 
 
 class DeviceKindModule(object):
@@ -20,6 +24,13 @@ class DeviceKindModule(object):
         if not instance.is_valid():
             return None, errors.MFAError(','.join(instance.errors))
         return instance.validated_data, None
+
+    @staticmethod
+    def generate_secure_token(policy):
+        token_len = policy.get_configuration(
+            Configuration.KIND_TOKEN_LENGTH) or Configuration.DEFAULT_TOKEN_LENGTH
+
+        return get_random_string(length=token_len, allowed_chars=string.digits)
 
     @abstractmethod
     def get_configuration_model(self, data):

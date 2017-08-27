@@ -24,6 +24,8 @@ class Policy(Entity):
 
 
 class Configuration(models.Model):
+    DEFAULT_TOKEN_LENGTH = 5
+
     KIND_TOKEN_LENGTH = 1
     KIND_CHALLENGE_EXPIRATION_IN_MINUTES = 2
     KIND_ENROLLMENT_EXPIRATION_IN_MINUTES = 3

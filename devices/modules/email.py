@@ -1,9 +1,7 @@
 from __future__ import unicode_literals
 
 import logging
-import string
 
-from django.utils.crypto import get_random_string
 from rest_framework import serializers
 
 from challenge.models import Challenge
@@ -11,21 +9,20 @@ from contrib.models import Module
 from core import errors
 from devices.models import Device
 from enrollment.models import Enrollment
-from policy.models import Configuration
 from .base import DeviceKindModule
 
 logger = logging.getLogger(__name__)
 
 
-class EmailDeviceHandlerEnrollmentCompletion(serializers.Serializer):
+class EmailDeviceEnrollmentCompleteRequest(serializers.Serializer):
     token = serializers.CharField()
 
 
-class EmailDeviceHandlerEnrollmentPreparation(serializers.Serializer):
+class EmailDeviceEnrollmentPrepareRequest(serializers.Serializer):
     address = serializers.EmailField()
 
 
-class EmailDeviceChallengeCompletion(serializers.Serializer):
+class EmailDeviceChallengeCompleteRequest(serializers.Serializer):
     token = serializers.CharField()
 
 
@@ -33,16 +30,16 @@ class EmailDeviceDetails(serializers.Serializer):
     address = serializers.EmailField()
 
 
-class EmailDevicePrivateChallengeDetails(serializers.Serializer):
+class EmailDeviceChallengePrivateDetails(serializers.Serializer):
     token = serializers.CharField()
 
 
-class EmailDevicePrivateEnrollmentDetails(serializers.Serializer):
+class EmailDeviceEnrollmentPrivateDetails(serializers.Serializer):
     address = serializers.EmailField()
     token = serializers.CharField()
 
 
-class EmailDeviceConfigurationModel(serializers.Serializer):
+class EmailDeviceKindModuleConfiguration(serializers.Serializer):
     from_email = serializers.EmailField()
     subject = serializers.CharField()
     message = serializers.CharField()
@@ -56,11 +53,6 @@ class EmailDeviceKindModule(DeviceKindModule):
     def mask_address(value):
         return value.split('@', 1)[1].lower()
 
-    def _generate_secure_token(self, policy):
-        token_len = policy.get_configuration(
-            Configuration.KIND_TOKEN_LENGTH) or Challenge.DEFAULT_TOKEN_LENGTH
-
-        return get_random_string(length=token_len, allowed_chars=string.digits)
 
     def _send_secure_token(self, address, policy, device_kind_options):
         # get instance of the communication module
@@ -72,12 +64,10 @@ class EmailDeviceKindModule(DeviceKindModule):
                     device_kind_options['communication_module']))
 
         # generate a secret token
-        tk = self._generate_secure_token(policy)
+        tk = DeviceKindModule.generate_secure_token(policy)
 
         # obtain the module request model
-
         mdl_instance = mdl.get_instance()
-
         req = mdl_instance.get_request_model(data={
             'from_email':
             device_kind_options['from_email'],
@@ -110,29 +100,29 @@ class EmailDeviceKindModule(DeviceKindModule):
 
     def get_configuration_model(self, data):
         return DeviceKindModule.build_model_instance(
-            EmailDeviceConfigurationModel, data)
+            EmailDeviceKindModuleConfiguration, data)
 
     def get_enrollment_prepare_model(self, data):
         return DeviceKindModule.build_model_instance(
-            EmailDeviceHandlerEnrollmentPreparation, data)
+            EmailDeviceEnrollmentPrepareRequest, data)
 
     def get_device_details_model(self, data):
         return DeviceKindModule.build_model_instance(EmailDeviceDetails, data)
 
     def get_enrollment_completion_model(self, data):
         return DeviceKindModule.build_model_instance(
-            EmailDeviceHandlerEnrollmentCompletion, data)
+            EmailDeviceEnrollmentCompleteRequest, data)
 
     def get_challenge_completion_model(self, data):
         return DeviceKindModule.build_model_instance(
-            EmailDeviceChallengeCompletion, data)
+            EmailDeviceChallengeCompleteRequest, data)
 
     def get_enrollment_public_details_model(self, data):
         return None
 
     def get_enrollment_private_details_model(self, data):
         return DeviceKindModule.build_model_instance(
-            EmailDevicePrivateEnrollmentDetails, data)
+            EmailDeviceEnrollmentPrivateDetails, data)
 
     def enrollment_prepare(self, enrollment):
         # get the email address from the device selection.
@@ -156,11 +146,8 @@ class EmailDeviceKindModule(DeviceKindModule):
             logger.error('failed to send secure token: {0}'.format(err))
             return False, None
 
-        logger.info('sent token `{0}` to address `{1}`'.format(
-            tk, prep_options['address']))
-
         # store token for future need
-        private_details = EmailDevicePrivateEnrollmentDetails(
+        private_details = EmailDeviceEnrollmentPrivateDetails(
             data={'token': tk,
                   'address': prep_options['address']})
 
@@ -174,7 +161,7 @@ class EmailDeviceKindModule(DeviceKindModule):
         assert not enrollment.is_expired()
 
         # compare given token to privately stored token
-        private_details = EmailDevicePrivateEnrollmentDetails(
+        private_details = EmailDeviceEnrollmentPrivateDetails(
             data=enrollment.private_details)
         if not private_details.is_valid():
             return None, errors.MFAInconsistentStateError(
@@ -189,7 +176,7 @@ class EmailDeviceKindModule(DeviceKindModule):
 
         # extract the device details
         details = EmailDeviceDetails(
-            data={'address': private_details.validated_data['adress']})
+            data={'address': private_details.validated_data['address']})
 
         assert details.is_valid()
 
@@ -198,7 +185,7 @@ class EmailDeviceKindModule(DeviceKindModule):
 
         device.name = u'Email [@{0}]'.format(
             EmailDeviceKindModule.mask_address(private_details.validated_data[
-                'adress']))
+                'address']))
 
         device.kind = enrollment.device_selection.kind
         device.enrollment = enrollment
@@ -230,7 +217,7 @@ class EmailDeviceKindModule(DeviceKindModule):
             return False, err
 
         # store for future use
-        private_details = EmailDevicePrivateChallengeDetails(
+        private_details = EmailDeviceChallengePrivateDetails(
             data={'token': tk})
 
         assert private_details.is_valid()
@@ -241,7 +228,7 @@ class EmailDeviceKindModule(DeviceKindModule):
         assert challenge.status == Challenge.STATUS_IN_PROGRESS
 
         # get the private challenge details; fail if we can't validate
-        serializer = EmailDevicePrivateChallengeDetails(
+        serializer = EmailDeviceChallengePrivateDetails(
             data=challenge.private_details)
         if not serializer.is_valid():
             return False, errors.MFAMissingInformationError(serializer.errors)

@@ -6,6 +6,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from devices.models import DeviceKind
+
 from .models import Enrollment
 from .serializers import EnrollmentSerializer, CreateEnrollmentSerializer, DeviceSelectionSerializer
 
@@ -28,10 +30,9 @@ class EnrollmentCompletion(APIView):
         if not enrollment:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        _, err = enrollment.complete(request.data)
+        err = enrollment.complete(request.data)
         if err:
             assert enrollment.status != Enrollment.STATUS_COMPLETE
-
             logger.error(
                 'failed to complete enrollment `{0}`: {1}'.format(pk, err))
             return Response(err.message, status=status.HTTP_400_BAD_REQUEST)
@@ -40,7 +41,7 @@ class EnrollmentCompletion(APIView):
             EnrollmentSerializer(enrollment).data, status=status.HTTP_200_OK)
 
 
-class EnrollmentDeviceSelection(APIView):
+class EnrollmentDevicePreparation(APIView):
     def post(self, request, pk, format=None):
         serializer = DeviceSelectionSerializer(data=request.data)
         if not serializer.is_valid():
@@ -55,7 +56,7 @@ class EnrollmentDeviceSelection(APIView):
 
         data = serializer.validated_data
 
-        _, err = enrollment.select_device(data)
+        err = enrollment.prepare(data)
         if err:
             logger.error(
                 'failed to select device `{0}` for enrollment `{1}`: {2}'.
@@ -70,7 +71,7 @@ class EnrollmentList(APIView):
     def post(self, request, format=None):
         serializer = CreateEnrollmentSerializer(data=request.data)
         if not serializer.is_valid():
-            logger.info('failed to validate create enrollment request: {0}'.
+            logger.error('failed to validate create enrollment request: {0}'.
                         format(serializer.errors))
             return Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST)

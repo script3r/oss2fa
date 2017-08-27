@@ -7,12 +7,12 @@ from tenants.models import Integration
 
 class DefaultIntegrationAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
-        access_key = request.META.get('X-Integration-Id')
+        access_key = request.META['headers'].get('X_INTEGRATION_TOKEN')
         if not access_key:
-            return None
+            raise exceptions.AuthenticationFailed(_('Missing integration token'))
 
         integration = Integration.objects.filter(access_key=access_key).first()
         if not integration:
             raise exceptions.AuthenticationFailed(_('Integration not found'))
 
-        return (integration, None)
+        return (None, integration)

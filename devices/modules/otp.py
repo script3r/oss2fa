@@ -103,9 +103,6 @@ class OTPDeviceKindModule(DeviceKindModule):
     def enrollment_prepare(self, enrollment):
         assert enrollment.status == Enrollment.STATUS_NEW
 
-        logger.info('preparing enrollment `{0}` for OTP processing'.format(
-            enrollment.pk))
-
         # create the secret for this session
         secret = pyotp.random_base32(
             length=self._configuration['secret_length'])
@@ -238,12 +235,12 @@ class OTPDeviceKindModule(DeviceKindModule):
         # obtain the device module, and create the OTP entity
         device = challenge.device.get_model()
 
-        OTP = pyotp.OTP(
+        otp = pyotp.TOTP(
             s=device['secret'],
             digits=device['digits'],
             interval=device['interval'])
 
         # verify the token given the validity window it was registered
-        return OTP.verify(
+        return otp.verify(
             data['token'],
             valid_window=self._configuration['valid_window']), None

@@ -61,7 +61,7 @@ class Enrollment(Entity):
     @staticmethod
     def get_by_integration_and_pk(pk, integration, **kwargs):
         return Enrollment.objects.filter(
-            pk=pk, client__integration=integration, **kwargs).first()
+            pk=pk, integration=integration, **kwargs).first()
 
     def _validate_device_selection(self):
         allowed_devices = self.policy.get_rule(Rule.KIND_DEVICE_SELECTION)
@@ -72,6 +72,12 @@ class Enrollment(Entity):
             raise ValidationError(
                 'device kind `{0}` is not in list of allowed devices: {1}'.
                 format(self.device_selection.kind.name, allowed_devices))
+
+    def _fail_enrollment(self, err):
+        self.status = Enrollment.STATUS_FAILED
+        self.save()
+
+        return err
 
     def clean(self):
         # make sure we are not
@@ -85,71 +91,55 @@ class Enrollment(Entity):
     def is_expired(self):
         self.expires_at < timezone.now()
 
-    def _fail_enrollment(self, cause=None):
-        logger.error(
-            u'failing enrollment `{0}` due to: {1}'.format(self.pk, cause))
-        self.status = Enrollment.STATUS_FAILED
-        self.save()
+    def prepare(self, data):
+        with transaction.atomic():
+            # make sure we don't have a device selection.
+            if self.device_selection:
+                return self._fail_enrollment(errors.MFAError(
+                    'enrollment `{0}` already has a device selection of device_kind `{1}`'.
+                    format(self.pk, self.device_selection.kind)))
 
-        return False, cause
+            # make sure the enrollment status is new
+            if self.status != Enrollment.STATUS_NEW:
+                return self._fail_enrollment(errors.MFAInconsistentStateError('enrollment `{0}` is not in a valid state: expected `{1}` however found `{2}`'.format(
+                    self.pk, Enrollment.STATUS_NEW, self.status
+                )))
 
-    def prepare(self):
-        assert self.status == Enrollment.STATUS_NEW
-        assert self.device_selection is not None
+            # get enrollment preparation data
+            prep_data, err = data['kind'].get_module().get_enrollment_prepare_model(data['options'])
 
-        # get the device module, and prepare enrollment
-        _, err = self.device_selection.kind.get_module().enrollment_prepare(
-            self)
-        if err:
-            logger.error(
-                'failed to prepare enrollment `{0}` for device kind `{1}`: {2}'.
-                format(self.pk, self.device_selection.get_kind_display(), err))
-            return False, err
+            # if we couldn't get preparation data, fail.
+            if err:
+                return self._fail_enrollment(err)
 
-        self.status = Enrollment.STATUS_IN_PROGRESS
-        self.save()
+            # create a device selection for this enrollment
+            DeviceSelection = apps.get_model('devices', 'DeviceSelection')
+            self.device_selection = DeviceSelection.objects.create(
+                kind=data['kind'], options=prep_data)
 
-        return True, None
+            # get the device module, and prepare enrollment
+            _, err = self.device_selection.kind.get_module().enrollment_prepare(
+                self)
 
-    def select_device(self, kind, options=None):
-        if self.device_selection:
-            return False, errors.MFAError(
-                'enrollment `{0}` already has a device selection of kind `{1}`'.
-                format(self.pk, self.device_selection.kind))
+            # if we couldn't finish preparation, fail.
+            if err:
+                return self._fail_enrollment(err)
 
-        prepare_data, err = kind.get_module().get_enrollment_prepare_model(
-            options)
-        if err:
-            logger.info(
-                'failed to prepare enrollment `{0}` for device kind `{1}`: {2}'.
-                format(self.pk, kind.name, err))
+            # mark the enrollment as in progress.
+            self.status = Enrollment.STATUS_IN_PROGRESS
+            self.save()
 
-            return False, err
-
-        DeviceSelection = apps.get_model('devices', 'DeviceSelection')
-
-        self.device_selection = DeviceSelection.objects.create(
-            kind=kind, options=prepare_data)
-
-        self.save()
-        logger.info(
-            'preparing enrollment `{0}` for device election of kind `{1}`'.
-            format(self.pk, self.device_selection.kind.name))
-        return self.prepare()
+            return None
 
     def complete(self, payload):
         if self.status != Enrollment.STATUS_IN_PROGRESS:
-            return False, errors.MFAInconsistentStateError(
+            return None, errors.MFAInconsistentStateError(
                 'enrollment `{0}` is in state `{1}` and cannot be completed',
                 self.pk, self.get_status_display())
 
         with transaction.atomic():
             assert self.status == Enrollment.STATUS_IN_PROGRESS
             assert self.device_selection is not None
-
-            logger.info(
-                'processing completion for enrollment `{0}` with `{1}`'.format(
-                    self.pk, payload))
 
             # get the device module
             device_module = self.device_selection.kind.get_module()
@@ -160,9 +150,6 @@ class Enrollment(Entity):
 
             # if we couldn't parse the data, fail
             if err:
-                logger.error(
-                    'failed to retrieve enrollment completion model: {0}'.
-                    format(err))
                 return self._fail_enrollment(err)
 
             # attempt to complete the enrollment
@@ -188,4 +175,4 @@ class Enrollment(Entity):
 
             self.save()
 
-            return True, None
+            return None
