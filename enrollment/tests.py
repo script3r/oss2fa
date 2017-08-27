@@ -40,7 +40,7 @@ class EnrollmentTestCase(BaseEnrollmentTestCase):
 
         DeviceKind.objects.create(
             name='OTP',
-            module='devices.modules.otp.OTPDeviceHandler',
+            module='devices.modules.otp.OTPDeviceKindModule',
             description='OTP Devices',
             configuration={
                 'issuer_name': 'pymfa',
@@ -59,7 +59,7 @@ class EnrollmentTestCase(BaseEnrollmentTestCase):
 
         DeviceKind.objects.create(
             name='Email',
-            module='devices.modules.email.EmailDeviceHandler',
+            module='devices.modules.email.EmailDeviceKindModule',
             description='Email Devices',
             configuration={
                 'from_email': 'isaac@odemgroup.com',

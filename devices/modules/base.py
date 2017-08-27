@@ -5,7 +5,7 @@ from abc import ABCMeta, abstractmethod
 from core import errors
 
 
-class DeviceHandler(object):
+class DeviceKindModule(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, configuration):
@@ -14,7 +14,7 @@ class DeviceHandler(object):
             raise Exception('could not instantiate configuration: {0}'.format(err))
 
     @staticmethod
-    def build_serializer_model(klass, data):
+    def build_model_instance(klass, data):
         instance = klass(data=data or {})
         if not instance.is_valid():
             return None, errors.MFAError(','.join(instance.errors))
@@ -41,11 +41,11 @@ class DeviceHandler(object):
         pass
 
     @abstractmethod
-    def get_enrollment_public_details(self, data):
+    def get_enrollment_public_details_model(self, data):
         pass
 
     @abstractmethod
-    def get_enrollment_private_details(self, data):
+    def get_enrollment_private_details_model(self, data):
         pass
 
     @abstractmethod

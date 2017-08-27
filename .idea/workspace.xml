@@ -2,67 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="42df8736-e187-4b26-bb90-bf411d31593f" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/challenge/migrations/0002_auto_20170121_2259.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/challenge/migrations/0003_challenge_portal_url.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/core/domain.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/core/middlewares.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/core/migrations/__init__.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/devices/migrations/0002_auto_20170121_2259.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/devices/modules/totp.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/devices/modules/u2f.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/enrollment/migrations/0002_auto_20170121_2259.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/enrollment/migrations/0003_enrollment_portal_url.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tenants/migrations/0002_auto_20170122_1958.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/verification/__init__.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/verification/admin.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/verification/apps.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/verification/migrations/0001_initial.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/verification/migrations/__init__.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/verification/models.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/verification/tests.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/verification/views.py" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/challenge/admin.py" afterPath="$PROJECT_DIR$/challenge/admin.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/challenge/apps.py" afterPath="$PROJECT_DIR$/challenge/apps.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/challenge/migrations/0001_initial.py" afterPath="$PROJECT_DIR$/challenge/migrations/0001_initial.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/challenge/models.py" afterPath="$PROJECT_DIR$/challenge/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/challenge/serializers.py" afterPath="$PROJECT_DIR$/challenge/serializers.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/challenge/signals.py" afterPath="$PROJECT_DIR$/challenge/signals.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/challenge/views.py" afterPath="$PROJECT_DIR$/challenge/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/apps.py" afterPath="$PROJECT_DIR$/core/apps.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/models.py" afterPath="$PROJECT_DIR$/core/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/devices/admin.py" afterPath="$PROJECT_DIR$/devices/admin.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/devices/apps.py" afterPath="$PROJECT_DIR$/devices/apps.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/devices/migrations/0001_initial.py" afterPath="$PROJECT_DIR$/devices/migrations/0001_initial.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/devices/models.py" afterPath="$PROJECT_DIR$/devices/models.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/devices/modules/base.py" afterPath="$PROJECT_DIR$/devices/modules/base.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/devices/modules/email.py" afterPath="$PROJECT_DIR$/devices/modules/email.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/devices/serializers.py" afterPath="$PROJECT_DIR$/devices/serializers.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docker-compose.yml" afterPath="$PROJECT_DIR$/docker-compose.yml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/enrollment/admin.py" afterPath="$PROJECT_DIR$/enrollment/admin.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/enrollment/apps.py" afterPath="$PROJECT_DIR$/enrollment/apps.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/enrollment/migrations/0001_initial.py" afterPath="$PROJECT_DIR$/enrollment/migrations/0001_initial.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/enrollment/models.py" afterPath="$PROJECT_DIR$/enrollment/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/enrollment/serializers.py" afterPath="$PROJECT_DIR$/enrollment/serializers.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/devices/modules/otp.py" afterPath="$PROJECT_DIR$/devices/modules/otp.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/enrollment/tests.py" afterPath="$PROJECT_DIR$/enrollment/tests.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/enrollment/views.py" afterPath="$PROJECT_DIR$/enrollment/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mfa/settings.py" afterPath="$PROJECT_DIR$/mfa/settings.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mfa/urls.py" afterPath="$PROJECT_DIR$/mfa/urls.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mfa/wsgi.py" afterPath="$PROJECT_DIR$/mfa/wsgi.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/policy/admin.py" afterPath="$PROJECT_DIR$/policy/admin.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/policy/apps.py" afterPath="$PROJECT_DIR$/policy/apps.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/policy/migrations/0001_initial.py" afterPath="$PROJECT_DIR$/policy/migrations/0001_initial.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/policy/models.py" afterPath="$PROJECT_DIR$/policy/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tenants/admin.py" afterPath="$PROJECT_DIR$/tenants/admin.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tenants/apps.py" afterPath="$PROJECT_DIR$/tenants/apps.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tenants/migrations/0001_initial.py" afterPath="$PROJECT_DIR$/tenants/migrations/0001_initial.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tenants/models.py" afterPath="$PROJECT_DIR$/tenants/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tenants/serializers.py" afterPath="$PROJECT_DIR$/tenants/serializers.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tenants/tests.py" afterPath="$PROJECT_DIR$/tenants/tests.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tenants/views.py" afterPath="$PROJECT_DIR$/tenants/views.py" />
     </list>
     <ignored path="mfa.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -86,17 +29,61 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="email.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="email.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/devices/modules/email.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="495">
-              <caret line="146" column="46" selection-start-line="146" selection-start-column="46" selection-end-line="146" selection-end-column="46" />
+            <state relative-caret-position="45">
+              <caret line="102" column="0" selection-start-line="102" selection-start-column="0" selection-end-line="102" selection-end-column="0" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
-                <element signature="e#1642#1839#0" expanded="false" />
-                <element signature="e#5568#6930#0" expanded="false" />
-                <element signature="e#6983#7800#0" expanded="false" />
-                <element signature="e#7861#8511#0" expanded="false" />
+                <element signature="e#1558#1595#0" expanded="false" />
+                <element signature="e#1651#1848#0" expanded="false" />
+                <element signature="e#1930#3321#0" expanded="false" />
+                <element signature="e#4320#5532#0" expanded="false" />
+                <element signature="e#5595#6960#0" expanded="false" />
+                <element signature="e#7013#7830#0" expanded="false" />
+                <element signature="e#7891#8541#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/enrollment/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="312">
+              <caret line="91" column="0" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#39#0" expanded="true" />
+                <element signature="e#2588#2863#0" expanded="false" />
+                <element signature="e#2899#2931#0" expanded="false" />
+                <element signature="e#2985#3170#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="tests.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/enrollment/tests.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="120">
+              <caret line="8" column="12" selection-start-line="8" selection-start-column="12" selection-end-line="8" selection-end-column="12" />
+              <folding>
+                <element signature="e#565#1029#0" expanded="false" />
+                <element signature="e#1086#4537#0" expanded="false" />
+                <element signature="e#3355#4537#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="base.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/devices/modules/base.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="240">
+              <caret line="16" column="22" selection-start-line="16" selection-start-column="22" selection-end-line="16" selection-end-column="22" />
+              <folding>
+                <element signature="e#0#39#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -112,14 +99,14 @@
       <list>
         <option value="$PROJECT_DIR$/devices/models.py" />
         <option value="$PROJECT_DIR$/devices/modules/otp.py" />
-        <option value="$PROJECT_DIR$/devices/modules/base.py" />
         <option value="$PROJECT_DIR$/mfa/settings.py" />
         <option value="$PROJECT_DIR$/enrollment/models.py" />
         <option value="$PROJECT_DIR$/contrib/models.py" />
         <option value="$PROJECT_DIR$/enrollment/tests.py" />
-        <option value="$PROJECT_DIR$/devices/modules/email.py" />
         <option value="$PROJECT_DIR$/policy/models.py" />
         <option value="$PROJECT_DIR$/contrib/communications.py" />
+        <option value="$PROJECT_DIR$/devices/modules/base.py" />
+        <option value="$PROJECT_DIR$/devices/modules/email.py" />
       </list>
     </option>
   </component>
@@ -176,52 +163,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="mfa" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mfa" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mfa" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="enrollment" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mfa" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mfa" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="devices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mfa" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mfa" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="devices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="modules" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -522,7 +463,7 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32920793" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -551,7 +492,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="1" />
+      <option name="time" value="3" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -604,14 +545,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/devices/modules/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="34" column="19" selection-start-line="34" selection-start-column="19" selection-end-line="34" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/contrib/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
@@ -636,17 +569,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/enrollment/tests.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="88" column="42" selection-start-line="88" selection-start-column="42" selection-end-line="88" selection-end-column="42" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-            <element signature="e#3349#4531#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/policy/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="825">
@@ -665,16 +587,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/enrollment/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1365">
-          <caret line="91" column="8" selection-start-line="91" selection-start-column="8" selection-end-line="91" selection-end-column="8" />
-          <folding>
-            <element signature="e#0#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/devices/modules/u2f.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
@@ -685,14 +597,52 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/devices/modules/email.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="495">
-          <caret line="146" column="46" selection-start-line="146" selection-start-column="46" selection-end-line="146" selection-end-column="46" />
+        <state relative-caret-position="45">
+          <caret line="102" column="0" selection-start-line="102" selection-start-column="0" selection-end-line="102" selection-end-column="0" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
-            <element signature="e#1642#1839#0" expanded="false" />
-            <element signature="e#5568#6930#0" expanded="false" />
-            <element signature="e#6983#7800#0" expanded="false" />
-            <element signature="e#7861#8511#0" expanded="false" />
+            <element signature="e#1558#1595#0" expanded="false" />
+            <element signature="e#1651#1848#0" expanded="false" />
+            <element signature="e#1930#3321#0" expanded="false" />
+            <element signature="e#4320#5532#0" expanded="false" />
+            <element signature="e#5595#6960#0" expanded="false" />
+            <element signature="e#7013#7830#0" expanded="false" />
+            <element signature="e#7891#8541#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/enrollment/tests.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" column="12" selection-start-line="8" selection-start-column="12" selection-end-line="8" selection-end-column="12" />
+          <folding>
+            <element signature="e#565#1029#0" expanded="false" />
+            <element signature="e#1086#4537#0" expanded="false" />
+            <element signature="e#3355#4537#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/devices/modules/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="22" selection-start-line="16" selection-start-column="22" selection-end-line="16" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/enrollment/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="312">
+          <caret line="91" column="0" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+            <element signature="e#2588#2863#0" expanded="false" />
+            <element signature="e#2899#2931#0" expanded="false" />
+            <element signature="e#2985#3170#0" expanded="false" />
           </folding>
         </state>
       </provider>

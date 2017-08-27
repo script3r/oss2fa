@@ -12,7 +12,7 @@ from core import errors
 from devices.models import Device
 from enrollment.models import Enrollment
 from policy.models import Configuration
-from .base import DeviceHandler
+from .base import DeviceKindModule
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class EmailDeviceConfigurationModel(serializers.Serializer):
     communication_module_settings = serializers.JSONField()
 
 
-class EmailDeviceHandler(DeviceHandler):
+class EmailDeviceKindModule(DeviceKindModule):
     @staticmethod
     def mask_address(value):
         return value.split('@', 1)[1].lower()
@@ -100,25 +100,25 @@ class EmailDeviceHandler(DeviceHandler):
         return tk, None
 
     def get_configuration_model(self, data):
-        return DeviceHandler.build_serializer_model(EmailDeviceConfigurationModel, data)
+        return DeviceKindModule.build_model_instance(EmailDeviceConfigurationModel, data)
 
     def get_enrollment_prepare_model(self, data):
-        return DeviceHandler.build_serializer_model(EmailDeviceHandlerEnrollmentPreparation, data)
+        return DeviceKindModule.build_model_instance(EmailDeviceHandlerEnrollmentPreparation, data)
 
     def get_device_details_model(self, data):
-        return DeviceHandler.build_serializer_model(EmailDeviceDetails, data)
+        return DeviceKindModule.build_model_instance(EmailDeviceDetails, data)
 
     def get_enrollment_completion_model(self, data):
-        return DeviceHandler.build_serializer_model(EmailDeviceHandlerEnrollmentCompletion, data)
+        return DeviceKindModule.build_model_instance(EmailDeviceHandlerEnrollmentCompletion, data)
 
     def get_challenge_completion_model(self, data):
-        return DeviceHandler.build_serializer_model(EmailDeviceChallengeCompletion, data)
+        return DeviceKindModule.build_model_instance(EmailDeviceChallengeCompletion, data)
 
-    def get_enrollment_public_details(self, data):
+    def get_enrollment_public_details_model(self, data):
         return None
 
-    def get_enrollment_private_details(self, data):
-        return DeviceHandler.build_serializer_model(EmailDevicePrivateEnrollmentDetails, data)
+    def get_enrollment_private_details_model(self, data):
+        return DeviceKindModule.build_model_instance(EmailDevicePrivateEnrollmentDetails, data)
 
     def enrollment_prepare(self, enrollment):
         # get the email address from the device selection.
@@ -180,7 +180,7 @@ class EmailDeviceHandler(DeviceHandler):
         device = Device()
 
         device.name = u'Email [@{0}]'.format(
-            EmailDeviceHandler.mask_address(private_details.validated_data['adress']))
+            EmailDeviceKindModule.mask_address(private_details.validated_data['adress']))
 
         device.kind = enrollment.device_selection.kind
         device.enrollment = enrollment

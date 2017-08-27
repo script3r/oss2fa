@@ -9,7 +9,7 @@ from rest_framework import serializers
 from core import errors
 from devices.models import Device
 from enrollment.models import Enrollment
-from .base import DeviceHandler
+from .base import DeviceKindModule
 
 logger = logging.getLogger(__name__)
 
@@ -71,27 +71,27 @@ class OTPDevicePrivateChallengeDetails(serializers.Serializer):
     token = serializers.CharField()
 
 
-class OTPDeviceHandler(DeviceHandler):
+class OTPDeviceKindModule(DeviceKindModule):
     def get_configuration_model(self, data):
-        return DeviceHandler.build_serializer_model(OTPConfiguration, data)
+        return DeviceKindModule.build_model_instance(OTPConfiguration, data)
 
     def get_device_details_model(self, data):
-        return DeviceHandler.build_serializer_model(OTPDeviceDetails, data)
+        return DeviceKindModule.build_model_instance(OTPDeviceDetails, data)
 
     def get_enrollment_prepare_model(self, data):
-        return DeviceHandler.build_serializer_model(OTPDeviceHandlerEnrollmentPreparation, data)
+        return DeviceKindModule.build_model_instance(OTPDeviceHandlerEnrollmentPreparation, data)
 
     def get_enrollment_completion_model(self, data):
-        return DeviceHandler.build_serializer_model(OTPDeviceHandlerEnrollmentCompletion, data)
+        return DeviceKindModule.build_model_instance(OTPDeviceHandlerEnrollmentCompletion, data)
 
     def get_challenge_completion_model(self, data):
-        return DeviceHandler.build_serializer_model(OTPDeviceChallengeCompletion, data)
+        return DeviceKindModule.build_model_instance(OTPDeviceChallengeCompletion, data)
 
-    def get_enrollment_public_details(self, data):
-        return DeviceHandler.build_serializer_model(OTPEnrollmentPublicDetails, data)
+    def get_enrollment_public_details_model(self, data):
+        return DeviceKindModule.build_model_instance(OTPEnrollmentPublicDetails, data)
 
-    def get_enrollment_private_details(self, data):
-        return DeviceHandler.build_serializer_model(OTPEnrollmentPrivateDetails, data)
+    def get_enrollment_private_details_model(self, data):
+        return DeviceKindModule.build_model_instance(OTPEnrollmentPrivateDetails, data)
 
     def enrollment_prepare(self, enrollment):
         assert enrollment.status == Enrollment.STATUS_NEW
@@ -112,7 +112,7 @@ class OTPDeviceHandler(DeviceHandler):
         prov_uri = OTP.provisioning_uri(enrollment.username, self._configuration['issuer_name'])
 
         # store the private details
-        private_details, err = self.get_enrollment_private_details({
+        private_details, err = self.get_enrollment_private_details_model({
             'secret': secret,
             'issuer_name': self._configuration['issuer_name'],
             'digits': self._configuration['digits'],
@@ -127,7 +127,7 @@ class OTPDeviceHandler(DeviceHandler):
             return False, err
 
         # store the public details
-        public_details, err = self.get_enrollment_public_details({
+        public_details, err = self.get_enrollment_public_details_model({
             'provisioning_uri': prov_uri
         })
 
@@ -148,7 +148,7 @@ class OTPDeviceHandler(DeviceHandler):
             # mark the enrollment as failed
             enrollment.status = Enrollment.STATUS_FAILED
 
-            private_details, err = self.get_enrollment_private_details(enrollment.private_details)
+            private_details, err = self.get_enrollment_private_details_model(enrollment.private_details)
             if err:
                 logger.error(
                     'failed to retrieve private details for OTP enrollment `{0}`: {1}'.format(enrollment.pk, err))
