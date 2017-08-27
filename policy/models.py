@@ -24,18 +24,18 @@ class Policy(Entity):
 
 
 class Configuration(models.Model):
-    KIND_CHALLENGE_TOKEN_LENGTH = 1
+    KIND_TOKEN_LENGTH = 1
     KIND_CHALLENGE_EXPIRATION_IN_MINUTES = 2
     KIND_ENROLLMENT_EXPIRATION_IN_MINUTES = 3
 
     KIND_CHOICES = (
-        (KIND_CHALLENGE_TOKEN_LENGTH, _('Challenge Token Length')),
+        (KIND_TOKEN_LENGTH, _('Token Digits Length')),
         (KIND_CHALLENGE_EXPIRATION_IN_MINUTES, _('Challenge Expiration (Minutes)')),
         (KIND_ENROLLMENT_EXPIRATION_IN_MINUTES, _('Enrollment Expiration (Minutes)')),
     )
 
     KIND_PROCESSORS = {
-        KIND_CHALLENGE_TOKEN_LENGTH: lambda x: int(float(x)),
+        KIND_TOKEN_LENGTH: lambda x: int(float(x)),
         KIND_CHALLENGE_EXPIRATION_IN_MINUTES: lambda x: int(float(x)),
         KIND_ENROLLMENT_EXPIRATION_IN_MINUTES: lambda x: int(float(x))
     }

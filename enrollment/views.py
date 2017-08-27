@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 class EnrollmentDetail(APIView):
-
     def get(self, request, pk, format=None):
         enrollment = Enrollment.get_by_integration_and_pk(pk, request.auth)
         if not enrollment:
@@ -23,7 +22,6 @@ class EnrollmentDetail(APIView):
 
 
 class EnrollmentCompletion(APIView):
-
     def post(self, request, pk, format=None):
         enrollment = Enrollment.get_by_integration_and_pk(pk, request.auth)
         if not enrollment:
@@ -41,7 +39,6 @@ class EnrollmentCompletion(APIView):
 
 
 class EnrollmentDeviceSelection(APIView):
-
     def post(self, request, pk, format=None):
         serializer = DeviceSelectionSerializer(data=request.data)
         if not serializer.is_valid():
@@ -65,7 +62,6 @@ class EnrollmentDeviceSelection(APIView):
 
 
 class EnrollmentList(APIView):
-
     def post(self, request, format=None):
         serializer = CreateEnrollmentSerializer(data=request.data)
         if not serializer.is_valid():

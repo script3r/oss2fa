@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 class ChallengeList(APIView):
-
     def post(self, request, format=None):
         serializer = CreateChallengeSerializer(data=request.data)
         if not serializer.is_valid():
@@ -41,7 +40,6 @@ class ChallengeList(APIView):
 
 
 class ChallengeDetailView(APIView):
-
     def get(self, request, pk, format=None):
         challenge = Challenge.get_by_integration_and_pk(pk, request.auth)
 
@@ -52,7 +50,6 @@ class ChallengeDetailView(APIView):
 
 
 class ChallengeCompletionView(APIView):
-
     def post(self, request, pk, format=None):
         challenge = Challenge.get_by_integration_and_pk(pk, request.auth)
         if not challenge:

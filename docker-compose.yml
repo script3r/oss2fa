@@ -2,6 +2,12 @@ version: '2'
 services:
   db:
     image: postgres
+    environment:
+      - POSTGRES_USER=mfa
+      - POSTGRES_PASSWORD=mfa
+      - POSTGRES_DB=mfa
+    ports:
+      - '5432:5432'
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000

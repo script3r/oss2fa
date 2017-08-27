@@ -46,6 +46,11 @@ class Challenge(Entity):
     expires_at = models.DateTimeField()
     portal_url = models.URLField(blank=True, null=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['client']),
+        ]
+
     def is_expired(self):
         return self.expires_at < timezone.now()
 

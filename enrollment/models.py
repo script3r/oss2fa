@@ -51,11 +51,16 @@ class Enrollment(Entity):
     status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES, default=STATUS_NEW)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['integration', 'username']),
+        ]
+
     @staticmethod
     def get_by_integration_and_pk(pk, integration, **kwargs):
         return Enrollment.objects.filter(pk=pk, client__integration=integration, **kwargs).first()
 
-    def __validate_device_selection(self):
+    def _validate_device_selection(self):
         allowed_devices = self.policy.get_rule(Rule.KIND_DEVICE_SELECTION)
         if not allowed_devices:
             return True
@@ -71,7 +76,7 @@ class Enrollment(Entity):
             raise ValidationError(
                 'a client entity cannot be assigned to this enrollment unless it is marked as complete')
 
-        self.__validate_device_selection()
+        self._validate_device_selection()
 
     def is_expired(self):
         self.expires_at < timezone.now()
@@ -85,44 +90,46 @@ class Enrollment(Entity):
         return False, cause
 
     def prepare(self):
-        with transaction.atomic():
-            assert self.status == Enrollment.STATUS_NEW
-            assert self.device_selection is not None
+        assert self.status == Enrollment.STATUS_NEW
+        assert self.device_selection is not None
 
-            logger.info(
-                'processing enrollment preparation for `{0}`'.format(self.pk))
+        # get the device module, and prepare enrollment
+        _, err = self.device_selection.kind.get_module().enrollment_prepare(self)
+        if err:
+            logger.error('failed to prepare enrollment `{0}` for device kind `{1}`: {2}'.format(self.pk,
+                                                                                                self.device_selection.get_kind_display(),
+                                                                                                err))
+            return False, err
 
-            # get the device module, and prepare enrollment
-            _, err = self.device_selection.kind.get_module().enrollment_prepare(self)
-            if err:
-                logger.error('failed to prepare enrollment `{0}` for device kind `{1}`: {2}'.format(self.pk,
-                                                                                                    self.device_selection.get_kind_display(),
-                                                                                                    err))
-                return False, err
+        self.status = Enrollment.STATUS_IN_PROGRESS
+        self.save()
 
-            self.status = Enrollment.STATUS_IN_PROGRESS
-            self.save()
-            return True, None
+        return True, None
 
-    def select_device(self, selection):
+    def select_device(self, kind, options=None):
         if self.device_selection:
-            return None, errors.MFAError('enrollment `{0}` already has a device selection of kind `{1}`'.format(self.pk,
+            return False, errors.MFAError('enrollment `{0}` already has a device selection of kind `{1}`'.format(self.pk,
                                                                                                                 self.device_selection.kind))
 
-        with transaction.atomic():
-            DeviceSelection = apps.get_model('devices', 'DeviceSelection')
+        prepare_data, err = kind.get_module().get_enrollment_prepare_model(options)
+        if err:
+            logger.info('failed to prepare enrollment `{0}` for device kind `{1}`: {2}'.format(
+                self.pk, kind.name, err
+            ))
 
-            self.device_selection = DeviceSelection.objects.create(
-                kind=selection['kind'],
-                options=selection['options']
-            )
+            return False, err
 
-            self.save()
+        DeviceSelection = apps.get_model('devices', 'DeviceSelection')
 
-            logger.info('preparing enrollment `{0}` for device election of kind `{1}`'.format(self.pk,
-                                                                                              self.device_selection.kind))
+        self.device_selection = DeviceSelection.objects.create(
+            kind=kind,
+            options=prepare_data
+        )
 
-            return self.prepare()
+        self.save()
+        logger.info('preparing enrollment `{0}` for device election of kind `{1}`'.format(self.pk,
+                                                                                          self.device_selection.kind.name))
+        return self.prepare()
 
     def complete(self, payload):
         if self.status != Enrollment.STATUS_IN_PROGRESS:

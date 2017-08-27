@@ -4,10 +4,10 @@ import logging
 
 from django.contrib.auth.models import User
 from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import Client, Integration, Tenant, TenantUser
 from .serializers import IntegrationClientAuthDecisionSerializer, IntegrationClientAuthDecisionResponseSerializer, \
@@ -35,7 +35,8 @@ class TenantIntegrationListView(APIView):
 
         data = serializer.data
         tenant = request.user.tenant_user.tenant
-        logger.info('processing creation of new integration `{0}` for tenant `{1}`'.format(data['name'], tenant.name))
+        logger.info('processing creation of new integration `{0}` for tenant `{1}`'.format(
+            data['name'], tenant.name))
 
         res = IntegrationSerializer(Integration.create(
             tenant=tenant,
@@ -46,7 +47,6 @@ class TenantIntegrationListView(APIView):
         return Response(res.data, status=status.HTTP_201_CREATED)
 
 
-
 class TenantsListView(APIView):
     def post(self, request, format=None):
         serializer = CreateTenantSerializer(data=request.data)
@@ -54,7 +54,8 @@ class TenantsListView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         data = serializer.data
-        logger.info('processing creation of new tenant `{0}`'.format(data['name']))
+        logger.info(
+            'processing creation of new tenant `{0}`'.format(data['name']))
 
         # create the tenant entity
         res = TenantSerializer(Tenant.create(
@@ -79,7 +80,8 @@ class IntegrationClientAuthDecision(APIView):
 
         data = serializer.validated_data
 
-        logger.info('processing auth decision for username `{0}`'.format(data['username']))
+        logger.info(
+            'processing auth decision for username `{0}`'.format(data['username']))
 
         # attempt to obtain a client with the given username
         client = Client.objects.filter(
@@ -89,7 +91,8 @@ class IntegrationClientAuthDecision(APIView):
 
         # if we don't have a client, send an enrollment signal
         if not client:
-            logger.info('auth informs that username `{0}` is not present; must enroll'.format(data['username']))
+            logger.info('auth informs that username `{0}` is not present; must enroll'.format(
+                data['username']))
 
             res = IntegrationClientAuthDecisionResponseSerializer({
                 'result': IntegrationClientAuthDecisionResponseSerializer.RESULT_ENROLL
@@ -108,7 +111,8 @@ class IntegrationClientAuthDecision(APIView):
 
             return Response(res.data, status=status.HTTP_200_OK)
 
-        # we have a client, and it is neither exempt or or denied, so must go through 2nd factor
+        # we have a client, and it is neither exempt or or denied, so must go
+        # through 2nd factor
         res = IntegrationClientAuthDecisionResponseSerializer({
             'result': IntegrationClientAuthDecisionResponseSerializer.RESULT_CHALLENGE,
             'devices': client.devices.all()

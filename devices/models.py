@@ -14,6 +14,7 @@ class DeviceKind(models.Model):
     configuration = JSONField(blank=True, null=True)
     description = models.TextField()
 
+
     def get_module(self):
         parts = self.module.rsplit('.', 1)
         klass = getattr(importlib.import_module(parts[0]), parts[1])

@@ -9,15 +9,15 @@ class DeviceHandler(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, configuration):
-        self._configuration, err = self.get_configuration_model(configuration or {})
+        self._configuration, err = self.get_configuration_model(configuration)
         if err:
             raise Exception('could not instantiate configuration: {0}'.format(err))
 
     @staticmethod
     def build_serializer_model(klass, data):
-        instance = klass(data=data)
+        instance = klass(data=data or {})
         if not instance.is_valid():
-            return None, errors.MFAError(instance.errors)
+            return None, errors.MFAError(','.join(instance.errors))
         return instance.validated_data, None
 
     @abstractmethod
@@ -34,6 +34,10 @@ class DeviceHandler(object):
 
     @abstractmethod
     def get_challenge_completion_model(self, data):
+        pass
+
+    @abstractmethod
+    def get_enrollment_prepare_model(self, data):
         pass
 
     @abstractmethod
