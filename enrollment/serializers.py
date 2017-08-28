@@ -19,7 +19,7 @@ class CreateEnrollmentSerializer(serializers.Serializer):
     binding_context = BindingContextSerializer(required=False)
 
 
-class DeviceSelectionSerializer(serializers.ModelSerializer):
+class DevicePreparationSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeviceSelection
         fields = ('kind', 'options')

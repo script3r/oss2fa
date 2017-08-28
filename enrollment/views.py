@@ -6,10 +6,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from devices.models import DeviceKind
 
 from .models import Enrollment
-from .serializers import EnrollmentSerializer, CreateEnrollmentSerializer, DeviceSelectionSerializer
+from .serializers import EnrollmentSerializer, CreateEnrollmentSerializer, DevicePreparationSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -37,13 +36,14 @@ class EnrollmentCompletion(APIView):
                 'failed to complete enrollment `{0}`: {1}'.format(pk, err))
             return Response(err.message, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(
-            EnrollmentSerializer(enrollment).data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_201_CREATED, headers={
+            'X-Client-Id': enrollment.client.pk,
+        })
 
 
 class EnrollmentDevicePreparation(APIView):
     def post(self, request, pk, format=None):
-        serializer = DeviceSelectionSerializer(data=request.data)
+        serializer = DevicePreparationSerializer(data=request.data)
         if not serializer.is_valid():
             logger.error('failed to parse device selection request: {0}'.
                          format(serializer.errors))

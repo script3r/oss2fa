@@ -3,6 +3,10 @@ from __future__ import unicode_literals
 import logging
 
 import pyotp
+import qrcode
+import base64
+import cStringIO
+
 from django.db import transaction
 from rest_framework import serializers
 
@@ -36,7 +40,7 @@ class OTPDeviceHandlerEnrollmentCompletion(serializers.Serializer):
 
 
 class OTPDeviceHandlerEnrollmentPreparation(serializers.Serializer):
-    pass
+    generate_qr_code = serializers.BooleanField(required=False, initial=False)
 
 
 class OTPEnrollmentPrivateDetails(serializers.Serializer):
@@ -52,6 +56,7 @@ class OTPEnrollmentPrivateDetails(serializers.Serializer):
 
 class OTPEnrollmentPublicDetails(serializers.Serializer):
     provisioning_uri = serializers.CharField()
+    qr_code = serializers.CharField(required=False, allow_null=True)
 
 
 class OTPDeviceChallengeCompletion(serializers.Serializer):
@@ -74,6 +79,25 @@ class OTPDevicePrivateChallengeDetails(serializers.Serializer):
 
 
 class OTPDeviceKindModule(DeviceKindModule):
+    @staticmethod
+    def generate_qr_code(provision_uri):
+        # create a qr code for the provisioning uri
+        qr = qrcode.QRCode(
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+        )
+
+        qr.add_data(provision_uri)
+        qr.make(fit=True)
+
+        img = qr.make_image(fill_color="black", back_color="white")
+        img_buffer = cStringIO.StringIO()
+        img.save(img_buffer, format='png')
+
+        res = base64.b64encode(img_buffer.getvalue())
+        img_buffer.close()
+
+        return res
+
     def get_configuration_model(self, data):
         return DeviceKindModule.build_model_instance(OTPConfiguration, data)
 
@@ -108,13 +132,13 @@ class OTPDeviceKindModule(DeviceKindModule):
             length=self._configuration['secret_length'])
 
         # create the provisioning uri
-        OTP = pyotp.TOTP(
+        otp = pyotp.TOTP(
             s=secret,
             digits=self._configuration['digits'],
             interval=self._configuration['interval'])
 
         # obtain the provisioning uri
-        prov_uri = OTP.provisioning_uri(enrollment.username,
+        prov_uri = otp.provisioning_uri(enrollment.username,
                                         self._configuration['issuer_name'])
 
         # store the private details
@@ -140,10 +164,13 @@ class OTPDeviceKindModule(DeviceKindModule):
                 'failed to create enrollment private details: {0}'.format(err))
             return False, err
 
+        # check if we should generate a qr-code
+        should_gen_qr = enrollment.device_selection.options.get('generate_qr_code', False)
+
         # store the public details
         public_details, err = self.get_enrollment_public_details_model({
-            'provisioning_uri':
-            prov_uri
+            'provisioning_uri': prov_uri,
+            'qr_code': OTPDeviceKindModule.generate_qr_code(prov_uri) if should_gen_qr else None,
         })
 
         if err:
@@ -173,12 +200,12 @@ class OTPDeviceKindModule(DeviceKindModule):
                 return False, err
 
             # create the provisioning uri
-            OTP = pyotp.TOTP(
+            totp = pyotp.TOTP(
                 s=private_details['secret'],
                 digits=private_details['digits'],
                 interval=private_details['interval'])
 
-            ok = OTP.verify(
+            ok = totp.verify(
                 data['token'],
                 valid_window=self._configuration['valid_window'])
             if not ok:

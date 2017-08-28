@@ -1,6 +1,8 @@
 import datetime
 
 import pyotp
+import urlparse
+
 from django.test import TestCase
 from django.utils import timezone
 
@@ -169,7 +171,9 @@ class EnrollmentAPITestCase(BaseEnrollmentTestCase, APITestCase):
 
         data = {
             'kind': DeviceKind.objects.get(name='OTP').pk,
-            'options': {}
+            'options': {
+                'generate_qr_code': True,
+            }
         }
 
         res = self.client.post(url, data, format='json', headers=self._additional_headers)
@@ -177,3 +181,17 @@ class EnrollmentAPITestCase(BaseEnrollmentTestCase, APITestCase):
 
         doc = res.json()
         self.assertTrue('provisioning_uri' in doc['public_details'])
+
+        prov_uri_parts = urlparse.urlsplit(doc['public_details']['provisioning_uri'])
+        secret = urlparse.parse_qs(prov_uri_parts.query)['secret'][0]
+
+        totp = pyotp.TOTP(secret)
+
+        data = {
+            'token': totp.now()
+        }
+
+        url = reverse('enrollment-complete', kwargs={'pk': doc['pk']})
+        res = self.client.post(url, data, format='json', headers=self._additional_headers)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
