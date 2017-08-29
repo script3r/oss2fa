@@ -22,17 +22,25 @@ class OTPConfiguration(serializers.Serializer):
     ALGORITHM_SHA1 = 'sha1'
     ALGORITHM_SHA256 = 'sha256'
 
+    DEFAULT_ALGORITHM = ALGORITHM_SHA1
+    DEFAULT_ISSUER = 'oss2fa'
+    DEFAULT_DIGITS = 6
+    DEFAULT_INTERVAL = 30
+    DEFAULT_SECRET_LENGTH = 32
+    DEFAULT_VALID_WINDOW = 1
+
+
     ALGORITHM_CHOICES = (
         (ALGORITHM_SHA1, 'sha1'),
         (ALGORITHM_SHA256, 'sha256'), )
 
-    issuer_name = serializers.CharField(initial='pymfa')
-    digits = serializers.IntegerField(initial=6)
-    interval = serializers.IntegerField(initial=30)
+    issuer_name = serializers.CharField(initial=DEFAULT_ISSUER)
+    digits = serializers.IntegerField(initial=DEFAULT_DIGITS)
+    interval = serializers.IntegerField(initial=DEFAULT_INTERVAL)
     algorithm = serializers.ChoiceField(
         choices=ALGORITHM_CHOICES, initial=ALGORITHM_SHA1)
-    secret_length = serializers.IntegerField(initial=32)
-    valid_window = serializers.IntegerField(initial=1)
+    secret_length = serializers.IntegerField(initial=DEFAULT_SECRET_LENGTH)
+    valid_window = serializers.IntegerField(initial=DEFAULT_VALID_WINDOW)
 
 
 class OTPDeviceHandlerEnrollmentCompletion(serializers.Serializer):

@@ -17,6 +17,11 @@ from policy.models import Policy, Configuration
 
 
 class Tenant(Entity):
+    DEFAULT_TENANT_NAME = 'Default'
+    DEFAULT_TENANT_CONTACT_FIRST_NAME = 'John'
+    DEFAULT_TENANT_CONTACT_LAST_NAME = 'Doe'
+    DEFAULT_TENANT_CONTACT_EMAIL = 'john.doe@nobody.com'
+
     class Meta:
         unique_together = ('name', )
 
@@ -102,6 +107,8 @@ class TenantUser(models.Model):
 
 
 class Integration(Entity):
+    DEFAULT_INTEGRATION_NAME = 'Default'
+
     ACCESS_KEY_LENGTH = 32
     SECRET_KEY_LENGTH = 48
 

@@ -10,11 +10,17 @@ services:
       - '5432:5432'
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: bash -c 'python manage.py makemigrations && python manage.py migrate && python manage.py bootstrap_system admin admin@admin.com admin Default && python manage.py runserver 0.0.0.0:8300'
     volumes:
       - .:/code
+    environment:
+      - MFA_DATABASE_NAME=mfa
+      - MFA_DATABASE_USER=mfa
+      - MFA_DATABASE_PASSWORD=mfa
+      - MFA_DATABASE_HOST=db
+      - MFA_DATABASE_PORT=5432
     ports:
-      - '8000:8000'
+      - '8300:8300'
     depends_on:
       - db
     links:

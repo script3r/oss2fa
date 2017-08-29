@@ -11,9 +11,12 @@ djangorestframework==3.6.4
 docutils==0.14
 enum34==1.1.6
 futures==3.1.1
+gunicorn==19.7.1
 idna==2.6
 ipaddress==1.0.18
 jmespath==0.9.3
+olefile==0.44
+Pillow==4.2.1
 psycopg2==2.7.3
 pyasn1==0.3.2
 pycparser==2.18
@@ -24,5 +27,6 @@ python-keyczar==0.716
 python-u2flib-server==5.0.0
 pytz==2017.2
 PyYAML==3.12
+qrcode==5.3
 s3transfer==0.1.10
 six==1.10.0
