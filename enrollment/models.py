@@ -89,7 +89,7 @@ class Enrollment(Entity):
         self._validate_device_selection()
 
     def is_expired(self):
-        self.expires_at < timezone.now()
+        return self.expires_at < timezone.now()
 
     def prepare(self, data):
         with transaction.atomic():
@@ -118,8 +118,7 @@ class Enrollment(Entity):
                 kind=data['kind'], options=prep_data)
 
             # get the device module, and prepare enrollment
-            _, err = self.device_selection.kind.get_module().enrollment_prepare(
-                self)
+            err = self.device_selection.kind.get_module().enrollment_prepare(self)
 
             # if we couldn't finish preparation, fail.
             if err:

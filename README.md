@@ -20,15 +20,12 @@ docker run --name oss2fa -d oss2fa
 You should see a command output similar to:
 
 ```bash
-oss2fa    |               Listener 1: tcp (addr: "0.0.0.0:8300", tls: "enabled")
-oss2fa    |                   Tenant: d28dd5a018294562dbc9a18c95554d52b5d12390
-oss2fa    |              Integration: d28dd5a018294562dbc9a18c95554d52b5d12390
-oss2fa    |                  Version: OSS2FA v1.0
-oss2fa    | 
-oss2fa    | ==> OSS2FA server started
+oss2fa_1  | ===> OSS2FA bootstrap complete!
+oss2fa_1  | ===> To get you started, we have created a default tenant and integration.
+oss2fa_1  | ===> Integration (name=`Default`, access_key=`cUWpf8Jz7aQKFqY5pkQVY5lsfjzRBeQN`, secret_key=`CVrMbfDlwm7bRjPOGpb4grz3r9TnVYhEMb0SPe1uC5HsasFd`)
 ```
 
-For your convenience, a default integration has been created on your behalf. 
+For your convenience, a default tenant and integration have been created on your behalf. 
 
 ### Architecture Overview
 
@@ -75,7 +72,7 @@ POST /integrations/enrollments HTTP/1.1
 ```text
 Host: 127.0.0.1:8300
 Accept: application/json; version=1.0
-X-Integration-Token: d28dd5a018294562dbc9a18c95554d52b5d12390
+X-Integration-Token: CVrMbfDlwm7bRjPOGpb4grz3r9TnVYhEMb0SPe1uC5HsasFd
 ```
 
 
@@ -110,7 +107,7 @@ POST /integrations/enrollments/1/prepare-device HTTP/1.1
 ```text
 Host: 127.0.0.1:8300
 Accept: application/json; version=1.0
-X-Integration-Token: d28dd5a018294562dbc9a18c95554d52b5d12390
+X-Integration-Token: CVrMbfDlwm7bRjPOGpb4grz3r9TnVYhEMb0SPe1uC5HsasFd
 ```
 
 ```json
@@ -146,7 +143,7 @@ Notice that we have requested the framework to generate the qr code on our behal
 
 #### Finalizing the enrollment
 
-After scanning the qr code above, or inputting the provisioning uri in your favorite authenticator application, you
+After importing the token in your favorite authenticator application, you
 can proceed to provide the current secret to the enrollment endpoint to finalize the process:
  
 ```text
@@ -156,7 +153,7 @@ POST /integrations/enrollments/1/complete HTTP/1.1
 ```text
 Host: 127.0.0.1:8300
 Accept: application/json; version=1.0
-X-Integration-Token: d28dd5a018294562dbc9a18c95554d52b5d12390
+X-Integration-Token: CVrMbfDlwm7bRjPOGpb4grz3r9TnVYhEMb0SPe1uC5HsasFd
 ```
 
 ```json

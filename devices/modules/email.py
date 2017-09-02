@@ -129,14 +129,14 @@ class EmailDeviceKindModule(DeviceKindModule):
         prep_options, err = self.get_enrollment_prepare_model(
             enrollment.device_selection.options)
         if err:
-            return False, errors.MFAInconsistentStateError(
+            return  errors.MFAInconsistentStateError(
                 'expected enrollment preparation information to be valid')
 
         # get the device kind details
         device_kind_options, err = self.get_configuration_model(
             enrollment.device_selection.kind.configuration)
         if err:
-            return False, err
+            return err
 
         # generate and send the token
         tk, err = self._send_secure_token(
@@ -144,7 +144,7 @@ class EmailDeviceKindModule(DeviceKindModule):
 
         if err:
             logger.error('failed to send secure token: {0}'.format(err))
-            return False, None
+            return None
 
         # store token for future need
         private_details = EmailDeviceEnrollmentPrivateDetails(
@@ -154,7 +154,7 @@ class EmailDeviceKindModule(DeviceKindModule):
         assert private_details.is_valid()
         enrollment.private_details = private_details.validated_data
 
-        return True, None
+        return None
 
     def enrollment_complete(self, enrollment, data):
         assert enrollment.status == Enrollment.STATUS_IN_PROGRESS

@@ -170,7 +170,7 @@ class OTPDeviceKindModule(DeviceKindModule):
         if err:
             logger.error(
                 'failed to create enrollment private details: {0}'.format(err))
-            return False, err
+            return err
 
         # check if we should generate a qr-code
         should_gen_qr = enrollment.device_selection.options.get('generate_qr_code', False)
@@ -184,12 +184,12 @@ class OTPDeviceKindModule(DeviceKindModule):
         if err:
             logger.error(
                 'failed to create enrollment public details: {0}'.format(err))
-            return False, err
+            return err
 
         enrollment.private_details = dict(private_details)
         enrollment.public_details = dict(public_details)
 
-        return True, None
+        return None
 
     def enrollment_complete(self, enrollment, data):
         with transaction.atomic():
