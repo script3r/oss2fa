@@ -5,31 +5,23 @@ from devices.models import DeviceKind
 from tenants.models import Tenant, Integration
 from devices.modules import otp
 
+import os
+
 
 class Command(BaseCommand):
     help = 'Perform bootstrap operations for oss2fa'
 
-    def add_arguments(self, parser):
-        parser.add_argument('admin_username', type=str, default='administrator')
-        parser.add_argument('admin_email', type=str, default='admin@oss2fa.com')
-        parser.add_argument('admin_password', type=str)
-        parser.add_argument('integration', type=str, default='Default')
-
-    def _generate_random_password(self):
-        return '12345'
-
     def handle(self, *args, **options):
-        user = User.objects.filter(username=options['admin_username']).first()
-        password = options['admin_password'] or self._generate_random_password()
+        user = User.objects.filter(username=os.getenv('OSS2FA_ADMIN_USERNAME')).first()
 
         if user:
             return
 
         if not user:
             _ = User.objects.create_superuser(
-                options['admin_username'],
-                options['admin_email'],
-                password
+                os.getenv('OSS2FA_ADMIN_USERNAME'),
+                os.getenv('OSS2FA_ADMIN_EMAIL'),
+                os.getenv('OSS2FA_ADMIN_PASSWORD')
             )
 
         DeviceKind.objects.create(
@@ -47,10 +39,8 @@ class Command(BaseCommand):
 
         tenant = Tenant.create(
             name=Tenant.DEFAULT_TENANT_NAME,
-            first_name=Tenant.DEFAULT_TENANT_CONTACT_FIRST_NAME,
-            last_name=Tenant.DEFAULT_TENANT_CONTACT_LAST_NAME,
-            email=options['admin_email'],
-            password=password,
+            email=os.getenv('OSS2FA_ADMIN_EMAIL'),
+            password=os.getenv('OSS2FA_ADMIN_PASSWORD'),
         )
 
         integration = Integration.create(
@@ -61,14 +51,11 @@ class Command(BaseCommand):
 
         message = '''
 ===> OSS2FA bootstrap complete!
-===> To get started, we have created an administrator account, a default tenant, and an integration.
-===> Administrator Account (username=`{0}`, password=`{1})
-===> Integration (name=`{2}`, access_key=`{3}`, secret_key=`{4}`)
+===> To get you started, we have created a default tenant and integration.
+===> Integration (name=`{0}`, access_key=`{1}`, secret_key=`{2}`)
 '''
         self.stdout.write(
             self.style.SUCCESS(message.format(
-                options['admin_username'],
-                password,
                 integration.name,
                 integration.access_key,
                 integration.secret_key

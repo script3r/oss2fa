@@ -18,15 +18,12 @@ from policy.models import Policy, Configuration
 
 class Tenant(Entity):
     DEFAULT_TENANT_NAME = 'Default'
-    DEFAULT_TENANT_CONTACT_FIRST_NAME = 'John'
-    DEFAULT_TENANT_CONTACT_LAST_NAME = 'Doe'
-    DEFAULT_TENANT_CONTACT_EMAIL = 'john.doe@nobody.com'
 
     class Meta:
         unique_together = ('name', )
 
     @staticmethod
-    def create(name, first_name, last_name, email, password):
+    def create(name, email, password, first_name='', last_name=''):
         with transaction.atomic():
             # create the tenant
             tenant = Tenant.objects.create(name=name)
@@ -89,7 +86,7 @@ class TenantUser(models.Model):
     groups = models.ManyToManyField(TenantGroup, related_name='users')
 
     @staticmethod
-    def create(tenant, email, first_name, last_name, password):
+    def create(tenant, email, password, first_name='', last_name=''):
         user = User.objects.create(
             username=email,
             email=email,

@@ -10,7 +10,7 @@ services:
       - '5432:5432'
   web:
     build: .
-    command: bash -c 'python manage.py makemigrations && python manage.py migrate && python manage.py bootstrap_system admin admin@admin.com admin Default && python manage.py runserver 0.0.0.0:8300'
+    command: bash -c 'python manage.py makemigrations && python manage.py migrate && python manage.py bootstrap && python manage.py runserver 0.0.0.0:8300'
     volumes:
       - .:/code
     environment:
@@ -19,6 +19,10 @@ services:
       - MFA_DATABASE_PASSWORD=mfa
       - MFA_DATABASE_HOST=db
       - MFA_DATABASE_PORT=5432
+      - OSS2FA_ADMIN_USERNAME=${OSS2FA_ADMIN_USERNAME}
+      - OSS2FA_ADMIN_EMAIL=${OSS2FA_ADMIN_EMAIL}
+      - OSS2FA_ADMIN_PASSWORD=${OSS2FA_ADMIN_PASSWORD}
+
     ports:
       - '8300:8300'
     depends_on:
