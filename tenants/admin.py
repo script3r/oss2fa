@@ -31,6 +31,12 @@ class ClientGroupAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 
+class IntegrationAdmin(admin.ModelAdmin):
+    list_display = ['name', 'created_at', 'access_key']
+    search_fields = ['name', 'access_key']
+
+
 admin.site.register(Tenant, TenantAdmin)
 admin.site.register(Client, ClientAdmin)
 admin.site.register(ClientGroup, ClientGroupAdmin)
+admin.site.register(Integration, IntegrationAdmin)

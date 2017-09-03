@@ -162,7 +162,7 @@ EMAIL_USE_TLS = True
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'mfa.auth.DefaultIntegrationAuthentication', ),
+        'mfa.auth.DefaultBasicAuthentication', ),
     'DEFAULT_VERSIONING_CLASS':
     'rest_framework.versioning.AcceptHeaderVersioning',
     'DEFAULT_VERSION':

@@ -10,6 +10,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+
 from contrib.models import Module
 from devices.models import DeviceKind
 from devices.modules.email import EmailDeviceEnrollmentPrivateDetails, EmailDeviceEnrollmentPrepareRequest, EmailDeviceEnrollmentCompleteRequest
@@ -23,6 +24,7 @@ BASE_TEST_USERNAME = 'test'
 
 
 class BaseEnrollmentTestCase(TestCase):
+
     def setUp(self):
         Tenant.create(
             name='Test Tenant',
@@ -68,6 +70,7 @@ class BaseEnrollmentTestCase(TestCase):
 
 
 class EnrollmentModelTestCase(BaseEnrollmentTestCase):
+
     def setUp(self):
         super(EnrollmentModelTestCase, self).setUp()
 
@@ -147,27 +150,28 @@ class EnrollmentModelTestCase(BaseEnrollmentTestCase):
 
 
 class EnrollmentAPITestCase(BaseEnrollmentTestCase, APITestCase):
+
     def setUp(self):
         super(EnrollmentAPITestCase, self).setUp()
 
-        self._integration = Integration.objects.get(name=BASE_TEST_INTEGRATION_NAME)
-        self._additional_headers = {
-            'X_INTEGRATION_TOKEN': self._integration.access_key
-        }
-
     def test_create_and_complete_totp_enrollment(self):
+        integration = Integration.objects.get(name=BASE_TEST_INTEGRATION_NAME)
         username = BASE_TEST_USERNAME + '_1'
 
         url = reverse('enrollment-list')
         data = {'username': username}
 
-        res = self.client.post(url, data, format='json', headers=self._additional_headers)
+        self.client.force_authenticate(user=integration, token=integration)
+
+        res = self.client.post(url, data, format='json')
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Enrollment.objects.filter(username=username, integration=self._integration).count(), 1)
+        self.assertEqual(Enrollment.objects.filter(
+            username=username, integration=integration).count(), 1)
 
         doc = res.json()
-        url = reverse('enrollment-detail-prepare-device', kwargs={'pk': doc['pk']})
+        url = reverse('enrollment-detail-prepare-device',
+                      kwargs={'pk': doc['pk']})
 
         data = {
             'kind': DeviceKind.objects.get(name='OTP').pk,
@@ -176,13 +180,14 @@ class EnrollmentAPITestCase(BaseEnrollmentTestCase, APITestCase):
             }
         }
 
-        res = self.client.post(url, data, format='json', headers=self._additional_headers)
+        res = self.client.post(url, data, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         doc = res.json()
         self.assertTrue('provisioning_uri' in doc['public_details'])
 
-        prov_uri_parts = urlparse.urlsplit(doc['public_details']['provisioning_uri'])
+        prov_uri_parts = urlparse.urlsplit(
+            doc['public_details']['provisioning_uri'])
         secret = urlparse.parse_qs(prov_uri_parts.query)['secret'][0]
 
         totp = pyotp.TOTP(secret)
@@ -192,6 +197,5 @@ class EnrollmentAPITestCase(BaseEnrollmentTestCase, APITestCase):
         }
 
         url = reverse('enrollment-complete', kwargs={'pk': doc['pk']})
-        res = self.client.post(url, data, format='json', headers=self._additional_headers)
+        res = self.client.post(url, data, format='json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-

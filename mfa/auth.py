@@ -1,18 +1,18 @@
-from django.utils.translation import ugettext_lazy as _
-from rest_framework import authentication
-from rest_framework import exceptions
-
 from tenants.models import Integration
 
+from rest_framework.authentication import BasicAuthentication
+from django.utils.translation import ugettext_lazy as _
+from rest_framework import exceptions
 
-class DefaultIntegrationAuthentication(authentication.BaseAuthentication):
-    def authenticate(self, request):
-        access_key = request.META['headers'].get('X_INTEGRATION_TOKEN')
-        if not access_key:
-            raise exceptions.AuthenticationFailed(_('Missing integration token'))
 
-        integration = Integration.objects.filter(access_key=access_key).first()
-        if not integration:
-            raise exceptions.AuthenticationFailed(_('Integration not found'))
+class DefaultBasicAuthentication(BasicAuthentication):
+
+    def authenticate_credentials(self, userid, password):
+        integration = Integration.objects.filter(access_key=userid).first()
+
+        print integration.secret_key, password
+        if not integration or (integration.secret_key != password):
+            raise exceptions.AuthenticationFailed(
+                _('Invalid access key or secret key'))
 
         return (None, integration)

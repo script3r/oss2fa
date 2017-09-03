@@ -19,6 +19,7 @@ from django.contrib import admin
 from challenge.views import ChallengeList, ChallengeDetailView, ChallengeCompletionView
 from enrollment.views import EnrollmentList, EnrollmentDetail, EnrollmentCompletion, EnrollmentDevicePreparation
 from tenants.views import IntegrationClientAuthDecision, TenantsListView, TenantIntegrationListView
+from devices.views import DeviceKindList
 
 urlpatterns = [
     url(r'^integration/clients/auth',
@@ -49,5 +50,6 @@ urlpatterns = [
         TenantIntegrationListView.as_view(),
         name='tenant-integration-list'),
     url(r'^tenants', TenantsListView.as_view(), name='tenant-list'),
+    url(r'^devices-kind', DeviceKindList.as_view(), name='device-kind-list'),
     url(r'^admin/', admin.site.urls),
 ]

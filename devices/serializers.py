@@ -9,6 +9,7 @@ class DeviceKindSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeviceKind
         fields = (
+            'pk',
             'name',
             'description', )
 
